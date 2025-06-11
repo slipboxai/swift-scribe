@@ -18,9 +18,10 @@ struct TranscriptView: View {
 
     @State var timer: Timer?
 
-    // AI-generated content state
-    @State var showingSummary = false
-    @State var generatedSummary = ""
+    // AI enhancement state
+    @State var showingEnhancedView = false
+    @State var enhancementError: String?
+    @State var isEditingSummary = false
 
     init(memo: Binding<Memo>, isRecording: Binding<Bool>) {
         self._memo = memo
@@ -36,13 +37,17 @@ struct TranscriptView: View {
                 if !memo.isDone {
                     liveRecordingView
                 } else {
-                    playbackView
+                    if showingEnhancedView && memo.summary != nil {
+                        enhancedView
+                    } else {
+                        playbackView
+                    }
                 }
             }
             Spacer()
         }
         .padding(20)
-        .navigationTitle(memo.title)
+        .navigationTitle(memo.title)  // Just use the regular title field
         .toolbar {
             Group {
                 #if os(iOS)
@@ -124,37 +129,37 @@ struct TranscriptView: View {
                 }
             }
         }
-        #if os(iOS)
-            .sheet(isPresented: $showingSettings) {
-                SettingsView(settings: settings)
+        .alert("Enhancement Error", isPresented: .constant(enhancementError != nil)) {
+            Button("OK") {
+                enhancementError = nil
             }
-        #endif
-        .sheet(isPresented: $showingSummary) {
-            NavigationView {
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 16) {
-                        Text("AI-Generated Summary")
-                            .font(.title2)
-                            .fontWeight(.semibold)
+        } message: {
+            if let error = enhancementError {
+                Text(error)
+            }
+        }
+    }
 
-                        Text(generatedSummary)
-                            .font(.body)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                    }
-                    .padding()
-                }
-                .navigationTitle(memo.title)
-                #if os(iOS)
-                    .navigationBarTitleDisplayMode(.inline)
-                    .toolbar {
-                        ToolbarItem(placement: .navigationBarTrailing) {
-                            Button("Done") {
-                                showingSummary = false
-                            }
-                            .buttonStyle(.borderedProminent)
-                        }
-                    }
-                #endif
+    // MARK: - Enhanced View
+
+    @ViewBuilder
+    private var enhancedView: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("AI Summary")
+                .font(.headline)
+                .foregroundStyle(.secondary)
+
+            // Editable TextEditor that takes up full available space
+            if let summary = memo.summary {
+                TextEditor(
+                    text: Binding(
+                        get: { memo.summary ?? "" },
+                        set: { memo.summary = $0 }
+                    )
+                )
+                .font(.body)
+                .scrollContentBackground(.hidden)
+                .clipShape(RoundedRectangle(cornerRadius: 12))
             }
         }
     }
@@ -206,26 +211,50 @@ struct TranscriptView: View {
     @ViewBuilder
     private var aiControlsGroup: some View {
         if memo.isDone {
-            Button {
-                handleAIEnhanceButtonTap()
-            } label: {
-                HStack(spacing: 8) {
-                    if isGenerating {
-                        ProgressView()
-                            .progressViewStyle(CircularProgressViewStyle())
-                            .scaleEffect(0.8)
-                    } else {
-                        Image(systemName: "sparkles")
+            HStack(spacing: 8) {
+                // View toggle button (only show if we have AI content)
+                if memo.summary != nil {
+                    Button {
+                        showingEnhancedView.toggle()
+                    } label: {
+                        HStack(spacing: 6) {
+                            Image(systemName: showingEnhancedView ? "doc.plaintext" : "sparkles")
+                                .font(.headline)
+                                .symbolRenderingMode(.monochrome)
+                                .foregroundStyle(showingEnhancedView ? .secondary : Color.purple)
+
+                            Text(showingEnhancedView ? "Transcript" : "Enhanced")
+                                .font(.headline)
+                                .fontWeight(.medium)
+                        }
+                    }
+                }
+
+                // Enhance/Re-enhance button
+                Button {
+                    handleAIEnhanceButtonTap()
+                } label: {
+                    HStack(spacing: 6) {
+                        if isGenerating {
+                            ProgressView()
+                                .progressViewStyle(CircularProgressViewStyle())
+                                .scaleEffect(0.8)
+                        } else {
+                            Image(
+                                systemName: memo.summary != nil ? "arrow.clockwise" : "sparkles"
+                            )
                             .font(.headline)
                             .symbolRenderingMode(.monochrome)
                             .foregroundStyle(.purple)
+                        }
+
+                        Text(memo.summary != nil ? "Re-enhance" : "Enhance")
+                            .font(.headline)
+                            .fontWeight(.medium)
                     }
-                    Text("Enhance")
-                        .font(.headline)
-                        .fontWeight(.medium)
                 }
+                .disabled(memo.text.characters.isEmpty || isGenerating)
             }
-            .disabled(memo.text.characters.isEmpty || isGenerating)
         }
     }
 
@@ -282,9 +311,19 @@ struct TranscriptView: View {
 
     @ViewBuilder
     var playbackView: some View {
-        textScrollView(attributedString: memo.textBrokenUpByParagraphs())
-            .frame(maxWidth: .infinity, alignment: .center)
-            .scrollEdgeEffectStyle(.soft, for: .all)
+        VStack(alignment: .leading, spacing: 16) {
+            Text("Transcript")
+                .font(.headline)
+                .foregroundStyle(.secondary)
+
+            TextEditor(text: .constant(memo.textBrokenUpByParagraphs()))
+                .font(.body)
+                .scrollContentBackground(.hidden)
+                .background(.clear)
+                .disabled(true)  // Read-only for now
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .scrollEdgeEffectStyle(.soft, for: .all)
     }
 
     private var progressView: some View {

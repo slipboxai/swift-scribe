@@ -109,31 +109,23 @@ extension TranscriptView {
 
     func handleAIEnhanceButtonTap() {
         Task {
-            await generateTitleAndSummary()
+            await generateAIEnhancements()
         }
     }
 
     @MainActor
-    private func generateTitleAndSummary() async {
+    private func generateAIEnhancements() async {
         isGenerating = true
+        enhancementError = nil
 
         do {
-            // Generate title using the existing method
-            if let newTitle = try await memo.suggestedTitle() {
-                memo.title = newTitle
-            }
-
-            // Generate summary using a basic template
-            let summaryTemplate =
-                "Provide a concise summary highlighting the key points and main topics discussed."
-            if let summary = try await memo.summarize(using: summaryTemplate) {
-                generatedSummary = summary
-                showingSummary = true
-            }
-
+            try await memo.generateAIEnhancements()
+            // Show the enhanced view after successful generation
+            showingEnhancedView = true
+        } catch let error as FoundationModelsError {
+            enhancementError = error.localizedDescription
         } catch {
-            print("Error generating AI content: \(error)")
-            // Could show an alert here for error handling
+            enhancementError = "Failed to generate AI enhancements: \(error.localizedDescription)"
         }
 
         isGenerating = false

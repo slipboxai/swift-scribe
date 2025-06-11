@@ -14,6 +14,9 @@ class Memo {
     var createdAt: Date
     var duration: TimeInterval?
 
+    // AI-enhanced content - now using AttributedString for rich formatting
+    var summary: AttributedString?
+
     init(
         title: String, text: AttributedString, url: URL? = nil, isDone: Bool = false,
         duration: TimeInterval? = nil
@@ -24,26 +27,90 @@ class Memo {
         self.isDone = isDone
         self.duration = duration
         self.createdAt = Date()
+        self.summary = nil
     }
 
+    /// Generates an AI-enhanced title and summary, storing them persistently
+    func generateAIEnhancements() async throws {
+        guard SystemLanguageModel.default.isAvailable else {
+            throw FoundationModelsError.generationFailed(
+                NSError(domain: "Foundation Models not available", code: -1))
+        }
+
+        let transcriptText = String(text.characters)
+        guard !transcriptText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            throw FoundationModelsError.generationFailed(
+                NSError(domain: "No content to enhance", code: -2))
+        }
+
+        // Generate enhanced title and summary concurrently
+        async let titleResult = generateEnhancedTitle(from: transcriptText)
+        async let summaryResult = generateRichSummary(from: transcriptText)
+
+        let (newTitle, newSummary) = try await (titleResult, summaryResult)
+
+        // Update the memo with generated content
+        self.title = newTitle
+        self.summary = newSummary
+    }
+
+    private func generateEnhancedTitle(from text: String) async throws -> String {
+        let session = FoundationModelsHelper.createSession(
+            instructions: """
+                You are an expert at creating clear, descriptive titles for voice memos and transcripts.
+                Your task is to create a concise, informative title that captures the main topic or purpose.
+
+                Guidelines:
+                - Keep titles between 3-8 words
+                - Use title case (capitalize major words)
+                - Focus on the main topic or key insight
+                - Avoid generic words like "memo" or "recording"
+                - Be specific and descriptive
+                """)
+
+        let prompt = "Create a clear, descriptive title for this voice memo transcript:\n\n\(text)"
+        return try await FoundationModelsHelper.generateText(
+            session: session,
+            prompt: prompt,
+            options: FoundationModelsHelper.temperatureOptions(0.3)  // Low temperature for consistent titles
+        )
+    }
+
+    private func generateRichSummary(from text: String) async throws -> AttributedString {
+        let session = FoundationModelsHelper.createSession(
+            instructions: """
+                You are an expert at creating concise, informative summaries of voice memos and transcripts.
+                Your summaries should capture the key points, main topics, and important details.
+
+                Guidelines:
+                - Create 2-4 well-structured paragraphs
+                - Start with the main topic or purpose
+                - Include key points and important details
+                - Use clear, professional language
+                - Maintain the original tone and intent
+                - End with any conclusions or next steps mentioned
+                - Mark important concepts or key terms that should be highlighted
+                """)
+
+        let prompt = "Create a comprehensive summary of this voice memo transcript:\n\n\(text)"
+        let summaryText = try await FoundationModelsHelper.generateText(
+            session: session,
+            prompt: prompt,
+            options: FoundationModelsHelper.temperatureOptions(0.4)
+        )
+
+        // Convert to AttributedString
+        return try AttributedString(markdown: summaryText)
+    }
+
+    // Legacy method for backward compatibility
     func suggestedTitle() async throws -> String? {
-        guard SystemLanguageModel.default.isAvailable else { return nil }
-        let session = LanguageModelSession(model: SystemLanguageModel.default)
-        let answer = try await session.respond(
-            to:
-                "Here is a transcribed voice memo. Can you please return your very best suggested title for it, with no other text? The title should be descriptive and concise. Transcription: \(text.characters)"
-        )
-        return answer.content.trimmingCharacters(in: .punctuationCharacters)
+        return try await generateEnhancedTitle(from: String(text.characters))
     }
 
-    func summarize(using template: String) async throws -> String? {
-        guard SystemLanguageModel.default.isAvailable else { return nil }
-        let session = LanguageModelSession(model: SystemLanguageModel.default)
-        let answer = try await session.respond(
-            to:
-                "Please summarize the following transcribed voice memo using this format/template: \(template)\n\nTranscription: \(text.characters)"
-        )
-        return answer.content
+    // Legacy method for backward compatibility - now returns AttributedString
+    func summarize(using template: String) async throws -> AttributedString? {
+        return try await generateRichSummary(from: String(text.characters))
     }
 }
 
