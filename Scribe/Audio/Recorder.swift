@@ -1,10 +1,3 @@
-/*
-See the LICENSE.txt file for this sample’s licensing information.
-
-Abstract:
-Audio input code
-*/
-
 import AVFoundation
 import Foundation
 import SwiftUI
@@ -29,6 +22,7 @@ class Recorder {
             .appendingPathExtension(for: .wav)
     }
 
+    @MainActor
     func record() async throws {
         self.memo.url.wrappedValue = url
         guard await isAuthorized() else {
@@ -45,23 +39,29 @@ class Recorder {
         }
     }
 
+    @MainActor
     func stopRecording() async throws {
         audioEngine.stop()
         memo.isDone.wrappedValue = true
 
         try await transcriber.finishTranscribing()
 
-        Task {
-            self.memo.title.wrappedValue =
+        await MainActor.run {
+            Task { [weak self] in
+                guard let self = self else { return }
+                self.memo.title.wrappedValue =
                 try await memo.wrappedValue.suggestedTitle() ?? memo.title.wrappedValue
+            }
         }
 
     }
 
+    @MainActor
     func pauseRecording() {
         audioEngine.pause()
     }
 
+    @MainActor
     func resumeRecording() throws {
         try audioEngine.start()
     }
@@ -103,6 +103,7 @@ class Recorder {
         audioEngine.inputNode.removeTap(onBus: 0)
     }
 
+    @MainActor
     func playRecording() {
         guard let file else {
             return
@@ -134,6 +135,7 @@ class Recorder {
         }
     }
 
+    @MainActor
     func stopPlaying() {
         audioEngine.stop()
     }

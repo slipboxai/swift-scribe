@@ -4,8 +4,8 @@ import SwiftUI
 
 @Observable
 final class SpokenWordTranscriber: Sendable {
-    private var inputSequence: AsyncStream<AnalyzerInput>?
-    private var inputBuilder: AsyncStream<AnalyzerInput>.Continuation?
+    private let inputSequence: AsyncStream<AnalyzerInput>
+    private let inputBuilder: AsyncStream<AnalyzerInput>.Continuation
     private var transcriber: SpeechTranscriber?
     private var analyzer: SpeechAnalyzer?
     private var recognizerTask: Task<(), Error>?
@@ -15,10 +15,10 @@ final class SpokenWordTranscriber: Sendable {
     // The format of the audio.
     var analyzerFormat: AVAudioFormat?
 
-    var converter = BufferConverter()
+    let converter = BufferConverter()
     var downloadProgress: Progress?
 
-    var memo: Binding<Memo>
+    let memo: Binding<Memo>
 
     var volatileTranscript: AttributedString = ""
     var finalizedTranscript: AttributedString = ""
@@ -28,6 +28,9 @@ final class SpokenWordTranscriber: Sendable {
 
     init(memo: Binding<Memo>) {
         self.memo = memo
+        let (stream, continuation) = AsyncStream<AnalyzerInput>.makeStream()
+        self.inputSequence = stream
+        self.inputBuilder = continuation
     }
 
     func setUpTranscriber() async throws {
@@ -53,9 +56,6 @@ final class SpokenWordTranscriber: Sendable {
         self.analyzerFormat = await SpeechAnalyzer.bestAvailableAudioFormat(compatibleWith: [
             transcriber
         ])
-        (inputSequence, inputBuilder) = AsyncStream<AnalyzerInput>.makeStream()
-
-        guard let inputSequence else { return }
 
         recognizerTask = Task {
             do {
@@ -64,7 +64,7 @@ final class SpokenWordTranscriber: Sendable {
                     if result.isFinal {
                         finalizedTranscript += text
                         volatileTranscript = ""
-                        updateStoryWithNewText(withFinal: text)
+                        updateMemoWithNewText(withFinal: text)
                     } else {
                         volatileTranscript = text
                         volatileTranscript.foregroundColor = .purple.opacity(0.4)
@@ -78,12 +78,12 @@ final class SpokenWordTranscriber: Sendable {
         try await analyzer?.start(inputSequence: inputSequence)
     }
 
-    func updateStoryWithNewText(withFinal str: AttributedString) {
+    func updateMemoWithNewText(withFinal str: AttributedString) {
         memo.text.wrappedValue.append(str)
     }
 
     func streamAudioToTranscriber(_ buffer: AVAudioPCMBuffer) async throws {
-        guard let inputBuilder, let analyzerFormat else {
+        guard let analyzerFormat else {
             throw TranscriptionError.invalidAudioDataType
         }
 
@@ -94,7 +94,7 @@ final class SpokenWordTranscriber: Sendable {
     }
 
     public func finishTranscribing() async throws {
-        inputBuilder?.finish()
+        inputBuilder.finish()
         try await analyzer?.finalizeAndFinishThroughEndOfInput()
         recognizerTask?.cancel()
         recognizerTask = nil

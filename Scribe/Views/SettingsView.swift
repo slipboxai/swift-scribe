@@ -68,18 +68,66 @@ struct SettingsView: View {
     @State private var columnVisibility = NavigationSplitViewVisibility.all
 
     var body: some View {
+        #if os(iOS)
+            // Use different navigation patterns based on device
+            if UIDevice.current.userInterfaceIdiom == .phone {
+                // iPhone: Use NavigationStack with list-style navigation
+                NavigationStack {
+                    List {
+                        ForEach(SettingsTab.allCases) { tab in
+                            NavigationLink(destination: destinationView(for: tab)) {
+                                Label(tab.rawValue, systemImage: tab.icon)
+                            }
+                        }
+                    }
+                    .navigationTitle("Settings")
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            Button(action: {
+                                dismiss()
+                            }) {
+                                Image(systemName: "xmark")
+                            }
+                        }
+                    }
+                }
+            } else {
+                // iPad: Use NavigationSplitView
+                splitViewLayout
+            }
+        #else
+            // macOS: Use NavigationSplitView
+            splitViewLayout
+        #endif
+    }
+
+    private var splitViewLayout: some View {
         NavigationSplitView(columnVisibility: $columnVisibility) {
             // Sidebar - following WWDC 2025 sidebar best practices
-            List(SettingsTab.allCases, selection: $selectedTab) { tab in
-                Label(tab.rawValue, systemImage: tab.icon)
-                    .tag(tab)
-            }
-            .navigationTitle("Settings")
-            .navigationSplitViewColumnWidth(min: 200, ideal: 220, max: 250)
-            .toolbarBackground(.hidden)
             #if os(macOS)
+                List(SettingsTab.allCases, selection: $selectedTab) { tab in
+                    Label(tab.rawValue, systemImage: tab.icon)
+                        .tag(tab)
+                }
+                .navigationTitle("Settings")
+                .navigationSplitViewColumnWidth(min: 200, ideal: 220, max: 250)
+                .toolbarBackground(.hidden)
                 .padding(.top, 10)
                 .toolbar(removing: .sidebarToggle)
+            #else
+                List(SettingsTab.allCases) { tab in
+                    Button(action: {
+                        selectedTab = tab
+                    }) {
+                        Label(tab.rawValue, systemImage: tab.icon)
+                            .foregroundColor(selectedTab == tab ? .accentColor : .primary)
+                    }
+                    .listRowBackground(
+                        selectedTab == tab ? Color.accentColor.opacity(0.1) : Color.clear)
+                }
+                .navigationTitle("Settings")
+                .navigationSplitViewColumnWidth(min: 200, ideal: 220, max: 250)
+                .toolbarBackground(.hidden)
             #endif
         } detail: {
             // Main content area with proper navigation structure
@@ -96,7 +144,6 @@ struct SettingsView: View {
             .navigationTitle(selectedTab.rawValue)
             #if os(macOS)
                 .navigationSplitViewStyle(.balanced)
-
                 .navigationSubtitle("")
             #endif
             .toolbar {
@@ -114,6 +161,27 @@ struct SettingsView: View {
         .frame(minWidth: 600, minHeight: 400)
         .onAppear {
             selectedTheme = ThemeOption.from(colorScheme: settings.colorScheme)
+        }
+    }
+
+    @ViewBuilder
+    private func destinationView(for tab: SettingsTab) -> some View {
+        switch tab {
+        case .general:
+            GeneralSettingsView()
+                .navigationTitle(tab.rawValue)
+                .navigationBarTitleDisplayMode(.large)
+        case .appearance:
+            AppearanceSettingsView(settings: settings, selectedTheme: $selectedTheme)
+                .navigationTitle(tab.rawValue)
+                .navigationBarTitleDisplayMode(.large)
+                .onAppear {
+                    selectedTheme = ThemeOption.from(colorScheme: settings.colorScheme)
+                }
+        case .about:
+            AboutSettingsView()
+                .navigationTitle(tab.rawValue)
+                .navigationBarTitleDisplayMode(.large)
         }
     }
 }
