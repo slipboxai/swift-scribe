@@ -53,7 +53,6 @@ class Memo {
         self.title = newTitle
         self.summary = newSummary
     }
-
     private func generateEnhancedTitle(from text: String) async throws -> String {
         let session = FoundationModelsHelper.createSession(
             instructions: """
@@ -64,16 +63,21 @@ class Memo {
                 - Keep titles between 3-8 words
                 - Use title case (capitalize major words)
                 - Focus on the main topic or key insight
-                - Avoid generic words like "memo" or "recording"
+                - Avoid generic words like memo or recording
                 - Be specific and descriptive
+                - Do not wrap the title in quotes
                 """)
 
-        let prompt = "Create a clear, descriptive title for this voice memo transcript:\n\n\(text)"
-        return try await FoundationModelsHelper.generateText(
+        let prompt =
+            "Create a clear, descriptive title for this voice memo transcript (do not include quotes in your response):\n\n\(text)"
+
+        let title = try await FoundationModelsHelper.generateText(
             session: session,
             prompt: prompt,
             options: FoundationModelsHelper.temperatureOptions(0.3)  // Low temperature for consistent titles
         )
+        return title.trimmingCharacters(in: .whitespacesAndNewlines).replacingOccurrences(
+            of: "\"", with: "")
     }
 
     private func generateRichSummary(from text: String) async throws -> AttributedString {

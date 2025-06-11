@@ -17,7 +17,7 @@ struct ContentView: View {
                 ForEach(memos) { memo in
                     NavigationLink(value: memo) {
                         VStack(alignment: .leading, spacing: 4) {
-                            Text(memo.title)
+                            Text(LocalizedStringKey(memo.title))
                                 .font(.headline)
                             Text(memo.createdAt.formatted(date: .abbreviated, time: .omitted))
                                 .font(.caption)
@@ -38,9 +38,6 @@ struct ContentView: View {
             }
             .navigationTitle("Memos")
             .navigationSplitViewColumnWidth(min: 250, ideal: 250, max: 400)
-            #if os(iOS)
-                .toolbar(columnVisibility == .all ? .visible : .hidden, for: .navigationBar)
-            #endif
             .toolbar {
                 #if os(iOS)
                     // Group primary actions together

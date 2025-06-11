@@ -29,6 +29,7 @@ struct TranscriptView: View {
         let transcriber = SpokenWordTranscriber(memo: memo)
         recorder = Recorder(transcriber: transcriber, memo: memo)
         speechTranscriber = transcriber
+        showingEnhancedView = memo.summary != nil
     }
 
     var body: some View {
@@ -37,7 +38,7 @@ struct TranscriptView: View {
                 if !memo.isDone {
                     liveRecordingView
                 } else {
-                    if showingEnhancedView && memo.summary != nil {
+                    if memo.summary != nil && showingEnhancedView {
                         enhancedView
                     } else {
                         playbackView
@@ -51,32 +52,68 @@ struct TranscriptView: View {
         .toolbar {
             Group {
                 #if os(iOS)
-                    ToolbarItem(placement: .navigationBarLeading) {
-                        playbackControlsGroup
+                    // Playback control
+                    if memo.isDone {
+                        ToolbarItem(placement: .navigationBarLeading) {
+                            playButton
+                        }
                     }
 
-                    ToolbarItem(placement: .principal) {
-                        recordingControlsGroup
+                    // Recording control
+                    if !memo.isDone {
+                        ToolbarItem(placement: .principal) {
+                            recordButton
+                        }
                     }
 
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        aiControlsGroup
+                    // AI controls
+                    if memo.isDone {
+                        // View toggle button
+                        if memo.summary != nil {
+                            ToolbarItem(placement: .navigationBarTrailing) {
+                                viewToggleButton
+                            }
+                        }
+
+                        // Enhance button
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            enhanceButton
+                        }
                     }
                 #else
-                    ToolbarItem {
-                        aiControlsGroup
+                    // AI controls
+                    if memo.isDone {
+                        // Enhance button
+                        ToolbarItem {
+                            enhanceButton
+                        }
+
+                        // View toggle button
+                        if memo.summary != nil {
+                            ToolbarItem {
+                                viewToggleButton
+                            }
+                        }
                     }
 
                     ToolbarSpacer(.fixed)
 
-                    ToolbarItem {
-                        recordingControlsGroup
+                    // Recording control
+                    if !memo.isDone {
+                        ToolbarItem {
+                            recordButton
+                        }
                     }
 
                     ToolbarSpacer(.fixed)
-                    ToolbarItem {
-                        playbackControlsGroup
+
+                    // Playback control
+                    if memo.isDone {
+                        ToolbarItem {
+                            playButton
+                        }
                     }
+
                     ToolbarSpacer(.fixed)
 
                 #endif
@@ -144,118 +181,172 @@ struct TranscriptView: View {
 
     @ViewBuilder
     private var enhancedView: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("AI Summary")
-                .font(.headline)
-                .foregroundStyle(.secondary)
-
-            // Editable TextEditor that takes up full available space
-            if let summary = memo.summary {
-                TextEditor(
-                    text: Binding(
-                        get: { memo.summary ?? "" },
-                        set: { memo.summary = $0 }
-                    )
-                )
-                .font(.body)
-                .scrollContentBackground(.hidden)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
-            }
-        }
-    }
-
-    // MARK: - Toolbar Groups
-
-    @ViewBuilder
-    private var playbackControlsGroup: some View {
-        if memo.isDone {
-            Button {
-                handlePlayButtonTap()
-            } label: {
-                HStack(spacing: 8) {
-                    Image(systemName: isPlaying ? "pause.fill" : "play.fill")
-                        .font(.headline)
+        VStack(alignment: .leading, spacing: 0) {
+            // Header section with better spacing
+            VStack(alignment: .leading, spacing: 8) {
+                HStack(spacing: 12) {
+                    Image(systemName: "sparkles")
+                        .font(.title2)
+                        .foregroundStyle(.purple)
                         .symbolRenderingMode(.monochrome)
-                        .foregroundStyle(.blue)
 
-                    Text(isPlaying ? "Pause" : "Play")
-                        .font(.headline)
-                        .fontWeight(.medium)
+                    Text("AI Enhanced Summary")
+                        .font(.title2)
+                        .fontWeight(.semibold)
                         .foregroundStyle(.primary)
+
+                    Spacer()
                 }
+
+                Text("Tap to edit and refine")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             }
-        }
-    }
+            .padding(.horizontal, 24)
+            .padding(.top, 20)
+            .padding(.bottom, 16)
 
-    @ViewBuilder
-    private var recordingControlsGroup: some View {
-        if !memo.isDone {
-            Button {
-                handleRecordingButtonTap()
-            } label: {
-                HStack(spacing: 8) {
-                    Image(systemName: isRecording ? "stop.fill" : "record.circle")
-                        .font(.headline)
-                        .symbolRenderingMode(.monochrome)
-                        .foregroundStyle(isRecording ? .red : .primary)
-
-                    Text(isRecording ? "Stop" : "Record")
-                        .font(.headline)
-                        .fontWeight(.medium)
-                        .foregroundStyle(isRecording ? .red : .primary)
+            // Enhanced content area with better formatting
+            if let summary = memo.summary {
+                ScrollView {
+                    TextEditor(
+                        text: Binding(
+                            get: {
+                                // Format the summary with proper paragraph breaks
+                                memo.summary ?? ""
+                            },
+                            set: { memo.summary = $0 }
+                        )
+                    )
+                    .font(.body)
+                    .lineSpacing(6)
+                    .scrollContentBackground(.hidden)
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 16)
+                    .frame(minHeight: 300)
                 }
-            }
-        }
-    }
+                .padding(.horizontal, 16)
+                .scrollEdgeEffectStyle(.soft, for: .all)
+            } else {
+                // Improved loading state
+                VStack(spacing: 20) {
+                    ProgressView()
+                        .scaleEffect(1.2)
+                        .foregroundStyle(.purple)
 
-    @ViewBuilder
-    private var aiControlsGroup: some View {
-        if memo.isDone {
-            HStack(spacing: 8) {
-                // View toggle button (only show if we have AI content)
-                if memo.summary != nil {
-                    Button {
-                        showingEnhancedView.toggle()
-                    } label: {
-                        HStack(spacing: 6) {
-                            Image(systemName: showingEnhancedView ? "doc.plaintext" : "sparkles")
-                                .font(.headline)
-                                .symbolRenderingMode(.monochrome)
-                                .foregroundStyle(showingEnhancedView ? .secondary : Color.purple)
-
-                            Text(showingEnhancedView ? "Transcript" : "Enhanced")
-                                .font(.headline)
-                                .fontWeight(.medium)
-                        }
-                    }
-                }
-
-                // Enhance/Re-enhance button
-                Button {
-                    handleAIEnhanceButtonTap()
-                } label: {
-                    HStack(spacing: 6) {
-                        if isGenerating {
-                            ProgressView()
-                                .progressViewStyle(CircularProgressViewStyle())
-                                .scaleEffect(0.8)
-                        } else {
-                            Image(
-                                systemName: memo.summary != nil ? "arrow.clockwise" : "sparkles"
-                            )
-                            .font(.headline)
-                            .symbolRenderingMode(.monochrome)
-                            .foregroundStyle(.purple)
-                        }
-
-                        Text(memo.summary != nil ? "Re-enhance" : "Enhance")
-                            .font(.headline)
+                    VStack(spacing: 8) {
+                        Text("Generating enhanced summary...")
+                            .font(.body)
                             .fontWeight(.medium)
+                            .foregroundStyle(.primary)
+
+                        Text("This may take a moment")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
                     }
                 }
-                .disabled(memo.text.characters.isEmpty || isGenerating)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .padding()
+            }
+
+            Spacer()
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .background(.background.secondary.opacity(0.3))
+    }
+
+    // MARK: - Individual Toolbar Buttons
+
+    @ViewBuilder
+    private var playButton: some View {
+        Button {
+            handlePlayButtonTap()
+        } label: {
+            HStack(spacing: 8) {
+                Image(systemName: isPlaying ? "pause.fill" : "play.fill")
+                    .font(.headline)
+                    .symbolRenderingMode(.monochrome)
+                    .foregroundStyle(.blue)
+
+                Text(isPlaying ? "Pause" : "Play")
+                    .font(.headline)
+                    .fontWeight(.medium)
+                    .foregroundStyle(.primary)
             }
         }
+        .buttonStyle(.glass)
+    }
+
+    @ViewBuilder
+    private var recordButton: some View {
+        Button {
+            handleRecordingButtonTap()
+        } label: {
+            HStack(spacing: 8) {
+                Image(systemName: isRecording ? "stop.fill" : "record.circle")
+                    .font(.headline)
+                    .symbolRenderingMode(.monochrome)
+                    .foregroundStyle(isRecording ? .red : .primary)
+
+                Text(isRecording ? "Stop" : "Record")
+                    .font(.headline)
+                    .fontWeight(.medium)
+                    .foregroundStyle(isRecording ? .red : .primary)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var viewToggleButton: some View {
+        Button {
+            withAnimation(.smooth(duration: 0.3)) {
+                showingEnhancedView.toggle()
+            }
+        } label: {
+            HStack(spacing: 6) {
+                Image(
+                    systemName: showingEnhancedView
+                        ? "sparkles.rectangle.stack.fill" : "doc.plaintext.fill"
+                )
+                .font(.system(size: 15, weight: .medium))
+                .symbolRenderingMode(.monochrome)
+                .foregroundStyle(.purple)
+
+                Text(showingEnhancedView ? "Transcript" : "Summary")
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+            }
+        }
+        .buttonStyle(.glass)
+    }
+
+    @ViewBuilder
+    private var enhanceButton: some View {
+        Button {
+            handleAIEnhanceButtonTap()
+            withAnimation(.smooth(duration: 0.3)) {
+                showingEnhancedView = true
+            }
+        } label: {
+            HStack(spacing: 6) {
+                if isGenerating {
+                    ProgressView()
+                        .scaleEffect(0.8)
+                        .tint(.white)
+                } else {
+                    Image(systemName: memo.summary != nil ? "arrow.clockwise" : "sparkles")
+                        .font(.system(size: 15, weight: .medium))
+                        .symbolRenderingMode(.monochrome)
+                        .foregroundStyle(.purple)
+                }
+
+                Text(memo.summary != nil ? "Re-enhance" : "Enhance")
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+            }
+        }
+        .buttonStyle(.glass)
+        .disabled(memo.text.characters.isEmpty || isGenerating)
     }
 
     @ViewBuilder
@@ -316,14 +407,17 @@ struct TranscriptView: View {
                 .font(.headline)
                 .foregroundStyle(.secondary)
 
-            TextEditor(text: .constant(memo.textBrokenUpByParagraphs()))
-                .font(.body)
-                .scrollContentBackground(.hidden)
-                .background(.clear)
-                .disabled(true)  // Read-only for now
+            ScrollView {
+                Text(memo.textBrokenUpByParagraphs())
+                    .font(.body)
+                    .lineSpacing(4)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
+                    .textSelection(.enabled)
+            }
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .scrollEdgeEffectStyle(.soft, for: .all)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
     }
 
     private var progressView: some View {
