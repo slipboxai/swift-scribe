@@ -19,15 +19,14 @@ final class SpokenWordTranscriber: Sendable {
     var downloadProgress: Progress?
 
     let memo: Binding<Memo>
+    let locale: Locale
 
     var volatileTranscript: AttributedString = ""
     var finalizedTranscript: AttributedString = ""
 
-    static let locale = Locale(
-        components: .init(languageCode: .english, script: nil, languageRegion: .unitedStates))
-
-    init(memo: Binding<Memo>) {
+    init(memo: Binding<Memo>, locale: Locale = Locale.current) {
         self.memo = memo
+        self.locale = locale
         let (stream, continuation) = AsyncStream<AnalyzerInput>.makeStream()
         self.inputSequence = stream
         self.inputBuilder = continuation
@@ -35,7 +34,7 @@ final class SpokenWordTranscriber: Sendable {
 
     func setUpTranscriber() async throws {
         transcriber = SpeechTranscriber(
-            locale: Locale.current,
+            locale: locale,
             transcriptionOptions: [],
             reportingOptions: [.volatileResults],
             attributeOptions: [.audioTimeRange])
@@ -47,16 +46,14 @@ final class SpokenWordTranscriber: Sendable {
         analyzer = SpeechAnalyzer(modules: [transcriber])
 
         do {
-            try await ensureModel(transcriber: transcriber, locale: Locale.current)
+            try await ensureModel(transcriber: transcriber, locale: locale)
         } catch let error as TranscriptionError {
-            print(error)
             return
         }
 
         self.analyzerFormat = await SpeechAnalyzer.bestAvailableAudioFormat(compatibleWith: [
             transcriber
         ])
-
         recognizerTask = Task {
             do {
                 for try await case let result in transcriber.results {
@@ -67,11 +64,11 @@ final class SpokenWordTranscriber: Sendable {
                         updateMemoWithNewText(withFinal: text)
                     } else {
                         volatileTranscript = text
-                        volatileTranscript.foregroundColor = .purple.opacity(0.4)
+                        volatileTranscript.foregroundColor = .purple.opacity(0.5)
                     }
                 }
             } catch {
-                print("speech recognition failed")
+                print("[Transcriber]: Speech recognition failed: \(error.localizedDescription)")
             }
         }
 

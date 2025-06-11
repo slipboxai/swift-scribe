@@ -119,6 +119,38 @@ extension TranscriptView {
         isPlaying.toggle()
     }
 
+    func handleAIEnhanceButtonTap() {
+        Task {
+            await generateTitleAndSummary()
+        }
+    }
+
+    @MainActor
+    private func generateTitleAndSummary() async {
+        isGenerating = true
+
+        do {
+            // Generate title using the existing method
+            if let newTitle = try await memo.suggestedTitle() {
+                memo.title = newTitle
+            }
+
+            // Generate summary using a basic template
+            let summaryTemplate =
+                "Provide a concise summary highlighting the key points and main topics discussed."
+            if let summary = try await memo.summarize(using: summaryTemplate) {
+                generatedSummary = summary
+                showingSummary = true
+            }
+
+        } catch {
+            print("Error generating AI content: \(error)")
+            // Could show an alert here for error handling
+        }
+
+        isGenerating = false
+    }
+
     @ViewBuilder func textScrollView(attributedString: AttributedString) -> some View {
         ScrollView {
             VStack(alignment: .leading) {
@@ -161,7 +193,7 @@ extension TranscriptView {
     @ViewBuilder func textWithHighlighting(attributedString: AttributedString) -> some View {
         Group {
             Text(attributedStringWithCurrentValueHighlighted(attributedString: attributedString))
-                .font(.title)
+                .font(.body)
         }
     }
 }

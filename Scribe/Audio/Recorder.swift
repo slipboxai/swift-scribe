@@ -25,13 +25,15 @@ class Recorder {
     @MainActor
     func record() async throws {
         self.memo.url.wrappedValue = url
+
         guard await isAuthorized() else {
-            print("user denied mic permission")
             return
         }
+
         #if os(iOS)
             try setUpAudioSession()
         #endif
+
         try await transcriber.setUpTranscriber()
 
         for await input in try await audioStream() {
@@ -50,7 +52,7 @@ class Recorder {
             Task { [weak self] in
                 guard let self = self else { return }
                 self.memo.title.wrappedValue =
-                try await memo.wrappedValue.suggestedTitle() ?? memo.title.wrappedValue
+                    try await memo.wrappedValue.suggestedTitle() ?? memo.title.wrappedValue
             }
         }
 
@@ -75,6 +77,7 @@ class Recorder {
 
     private func audioStream() async throws -> AsyncStream<AVAudioPCMBuffer> {
         try setupAudioEngine()
+
         audioEngine.inputNode.installTap(
             onBus: 0,
             bufferSize: 4096,
@@ -131,7 +134,9 @@ class Recorder {
             try audioEngine.start()
             playerNode.play()
         } catch {
-            print("error")
+            print(
+                "[Recorder]: Error starting audio engine: \(error.localizedDescription)"
+            )
         }
     }
 

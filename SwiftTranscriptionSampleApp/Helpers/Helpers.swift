@@ -161,7 +161,8 @@ extension TranscriptView {
     @ViewBuilder func textWithHighlighting(attributedString: AttributedString) -> some View {
         Group {
             Text(attributedStringWithCurrentValueHighlighted(attributedString: attributedString))
-                .font(.title)
+                .font(.body)
+                .trimmingCharacters(in: .whitespacesAndNewlines)
         }
     }
 }
