@@ -67,80 +67,83 @@ struct SettingsView: View {
     @State private var selectedTab: SettingsTab = .general
     @State private var columnVisibility = NavigationSplitViewVisibility.all
 
+    private var isPhone: Bool {
+        #if os(iOS)
+            return UIDevice.current.userInterfaceIdiom == .phone
+        #else
+            return false
+        #endif
+    }
+
     var body: some View {
         #if os(iOS)
-            // Use different navigation patterns based on device
-            if UIDevice.current.userInterfaceIdiom == .phone {
-                // iPhone: Use NavigationStack with list-style navigation
-                NavigationStack {
-                    List {
-                        ForEach(SettingsTab.allCases) { tab in
-                            NavigationLink(destination: destinationView(for: tab)) {
-                                Label(tab.rawValue, systemImage: tab.icon)
-                            }
-                        }
-                    }
-                    .navigationTitle("Settings")
-                    .toolbar {
-                        ToolbarItem(placement: .navigationBarTrailing) {
-                            Button(action: {
-                                dismiss()
-                            }) {
-                                Image(systemName: "xmark")
-                            }
-                        }
-                    }
-                }
-            } else {
-                // iPad: Use NavigationSplitView
-                splitViewLayout
-            }
+            phoneLayout
         #else
-            // macOS: Use NavigationSplitView
             splitViewLayout
         #endif
     }
 
-    private var splitViewLayout: some View {
-        NavigationSplitView(columnVisibility: $columnVisibility) {
-            // Sidebar - following WWDC 2025 sidebar best practices
-            #if os(macOS)
-                List(SettingsTab.allCases, selection: $selectedTab) { tab in
-                    Label(tab.rawValue, systemImage: tab.icon)
-                        .tag(tab)
-                }
-                .navigationTitle("Settings")
-                .navigationSplitViewColumnWidth(min: 200, ideal: 220, max: 250)
-                .toolbarBackground(.hidden)
-                .padding(.top, 10)
-                .toolbar(removing: .sidebarToggle)
-            #else
-                List(SettingsTab.allCases) { tab in
-                    Button(action: {
-                        selectedTab = tab
-                    }) {
-                        Label(tab.rawValue, systemImage: tab.icon)
-                            .foregroundColor(selectedTab == tab ? .accentColor : .primary)
+    #if os(iOS)
+        private var phoneLayout: some View {
+            NavigationStack {
+                List {
+                    ForEach(SettingsTab.allCases) { tab in
+                        NavigationLink(destination: settingsContent(for: tab)) {
+                            Label(tab.rawValue, systemImage: tab.icon)
+                        }
                     }
-                    .listRowBackground(
-                        selectedTab == tab ? Color.accentColor.opacity(0.1) : Color.clear)
                 }
                 .navigationTitle("Settings")
-                .navigationSplitViewColumnWidth(min: 200, ideal: 220, max: 250)
-                .toolbarBackground(.hidden)
-            #endif
-        } detail: {
-            // Main content area with proper navigation structure
-            Group {
-                switch selectedTab {
-                case .general:
-                    GeneralSettingsView()
-                case .appearance:
-                    AppearanceSettingsView(settings: settings, selectedTheme: $selectedTheme)
-                case .about:
-                    AboutSettingsView()
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        dismissButton
+                    }
                 }
             }
+        }
+    #endif
+
+    private var splitViewLayout: some View {
+        NavigationSplitView(columnVisibility: $columnVisibility) {
+            sidebarContent
+        } detail: {
+            detailContent
+        }
+        .frame(minWidth: 600, minHeight: 400)
+        .onAppear {
+            selectedTheme = ThemeOption.from(colorScheme: settings.colorScheme)
+        }
+    }
+
+    private var sidebarContent: some View {
+        #if os(macOS)
+            List(SettingsTab.allCases, selection: $selectedTab) { tab in
+                Label(tab.rawValue, systemImage: tab.icon)
+                    .tag(tab)
+            }
+            .navigationTitle("Settings")
+            .navigationSplitViewColumnWidth(min: 200, ideal: 220, max: 250)
+            .toolbarBackground(.hidden)
+            .padding(.top, 10)
+            .toolbar(removing: .sidebarToggle)
+        #else
+            List(SettingsTab.allCases) { tab in
+                Button(action: { selectedTab = tab }) {
+                    Label(tab.rawValue, systemImage: tab.icon)
+                        .foregroundColor(selectedTab == tab ? .accentColor : .primary)
+                }
+                .listRowBackground(
+                    selectedTab == tab ? Color.accentColor.opacity(0.1) : Color.clear
+                )
+            }
+            .navigationTitle("Settings")
+            .navigationSplitViewColumnWidth(min: 200, ideal: 220, max: 250)
+            .toolbarBackground(.hidden)
+        #endif
+    }
+
+    private var detailContent: some View {
+        settingsContent(for: selectedTab)
             .navigationTitle(selectedTab.rawValue)
             #if os(macOS)
                 .navigationSplitViewStyle(.balanced)
@@ -149,80 +152,60 @@ struct SettingsView: View {
             .toolbar {
                 #if os(iOS)
                     ToolbarItem(placement: .navigationBarTrailing) {
-                        Button("Done") {
-                            dismiss()
-                        }
-                        .buttonStyle(.borderedProminent)
+                        dismissButton
                     }
                 #endif
             }
             .toolbarBackground(.hidden)
-        }
-        .frame(minWidth: 600, minHeight: 400)
-        .onAppear {
-            selectedTheme = ThemeOption.from(colorScheme: settings.colorScheme)
+    }
+
+    private var dismissButton: some View {
+        Button(action: { dismiss() }) {
+            Image(systemName: "xmark")
         }
     }
 
     @ViewBuilder
-    private func destinationView(for tab: SettingsTab) -> some View {
+    private func settingsContent(for tab: SettingsTab) -> some View {
         switch tab {
         case .general:
             GeneralSettingsView()
-                .navigationTitle(tab.rawValue)
-                .navigationBarTitleDisplayMode(.large)
         case .appearance:
             AppearanceSettingsView(settings: settings, selectedTheme: $selectedTheme)
-                .navigationTitle(tab.rawValue)
-                .navigationBarTitleDisplayMode(.large)
                 .onAppear {
                     selectedTheme = ThemeOption.from(colorScheme: settings.colorScheme)
                 }
         case .about:
             AboutSettingsView()
-                .navigationTitle(tab.rawValue)
-                .navigationBarTitleDisplayMode(.large)
         }
     }
 }
 
 struct GeneralSettingsView: View {
     var body: some View {
-        Form {
-            Section {
-                VStack(alignment: .leading, spacing: 20) {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("General Settings")
-                            .font(.title2)
-                            .fontWeight(.semibold)
+        SettingsPageView(
+            title: "General Settings",
+            subtitle: "Configure general app behavior and preferences."
+        ) {
+            SettingsGroup(title: "Coming Soon") {
+                HStack {
+                    Image(systemName: "wrench.and.screwdriver")
+                        .foregroundStyle(.secondary)
+                        .font(.title2)
 
-                        Text("Configure general app behavior and preferences.")
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("General Preferences")
+                            .fontWeight(.medium)
+                        Text("Additional settings will be added in future updates")
+                            .font(.caption)
                             .foregroundStyle(.secondary)
                     }
 
-                    // Following WWDC 2025 grouping guidelines
-                    GroupBox("Coming Soon") {
-                        HStack {
-                            Image(systemName: "wrench.and.screwdriver")
-                                .foregroundStyle(.secondary)
-                                .font(.title2)
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text("General Preferences")
-                                    .fontWeight(.medium)
-                                Text("Additional settings will be added in future updates")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                            }
-                            Spacer()
-                        }
-                        .padding()
-                    }
+                    Spacer()
                 }
                 .padding()
             }
         }
-        .formStyle(.grouped)
-        .scrollContentBackground(.hidden)  // WWDC 2025: Let new materials shine through
     }
 }
 
@@ -231,129 +214,143 @@ struct AppearanceSettingsView: View {
     @Binding var selectedTheme: ThemeOption
 
     var body: some View {
-        Form {
-            Section {
-                VStack(alignment: .leading, spacing: 20) {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Appearance")
-                            .font(.title2)
-                            .fontWeight(.semibold)
-
-                        Text("Customize the look and feel of the app.")
-                            .foregroundStyle(.secondary)
+        SettingsPageView(
+            title: "Appearance",
+            subtitle: "Customize the look and feel of the app."
+        ) {
+            SettingsGroup(title: "Theme") {
+                VStack(alignment: .leading, spacing: 16) {
+                    HStack {
+                        Text("Color Scheme")
+                            .fontWeight(.medium)
+                        Spacer()
                     }
 
-                    // Following WWDC 2025 control grouping and styling
-                    GroupBox("Theme") {
-                        VStack(alignment: .leading, spacing: 16) {
-                            HStack {
-                                Text("Color Scheme")
-                                    .fontWeight(.medium)
-                                Spacer()
-                            }
-
-                            Picker("Theme", selection: $selectedTheme) {
-                                ForEach(ThemeOption.allCases, id: \.self) { option in
-                                    Text(option.displayName)
-                                        .tag(option)
-                                }
-                            }
-                            .pickerStyle(.segmented)
-                            .onChange(of: selectedTheme) { _, newValue in
-                                settings.setColorScheme(newValue.colorScheme)
-                            }
-
-                            Text(
-                                "Choose how the app appears. System uses your device's appearance setting."
-                            )
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                    Picker("Theme", selection: $selectedTheme) {
+                        ForEach(ThemeOption.allCases, id: \.self) { option in
+                            Text(option.displayName).tag(option)
                         }
-                        .padding()
                     }
+                    .pickerStyle(.segmented)
+                    .onChange(of: selectedTheme) { _, newValue in
+                        settings.setColorScheme(newValue.colorScheme)
+                    }
+
+                    Text(
+                        "Choose how the app appears. System uses your device's appearance setting."
+                    )
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
                 }
                 .padding()
             }
         }
-        .formStyle(.grouped)
-        .scrollContentBackground(.hidden)  // WWDC 2025: Clean background for new materials
     }
 }
 
 struct AboutSettingsView: View {
     var body: some View {
-        Form {
-            Section {
-                VStack(alignment: .leading, spacing: 20) {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("About")
-                            .font(.title2)
-                            .fontWeight(.semibold)
+        SettingsPageView(
+            title: "About",
+            subtitle: "Information about Slipbox Scribe."
+        ) {
+            SettingsGroup(title: "App Information") {
+                VStack(spacing: 16) {
+                    HStack {
+                        Image(systemName: "app.badge")
+                            .font(.largeTitle)
+                            .foregroundStyle(.blue)
 
-                        Text("Information about Slipbox Scribe.")
-                            .foregroundStyle(.secondary)
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Slipbox Scribe")
+                                .font(.headline)
+                                .fontWeight(.semibold)
+                            Text("AI-powered audio transcription and note-taking")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+
+                        Spacer()
                     }
 
-                    GroupBox("App Information") {
-                        VStack(spacing: 16) {
-                            HStack {
-                                Image(systemName: "app.badge")
-                                    .font(.largeTitle)
-                                    .foregroundStyle(.blue)
-                                VStack(alignment: .leading, spacing: 4) {
-                                    Text("Slipbox Scribe")
-                                        .font(.headline)
-                                        .fontWeight(.semibold)
-                                    Text("AI-powered audio transcription and note-taking")
-                                        .font(.caption)
-                                        .foregroundStyle(.secondary)
-                                }
-                                Spacer()
-                            }
+                    Divider()
 
-                            Divider()
-
-                            VStack(spacing: 12) {
-                                HStack {
-                                    Text("Version")
-                                        .fontWeight(.medium)
-                                    Spacer()
-                                    Text("1.0.0")
-                                        .foregroundStyle(.secondary)
-                                        .fontDesign(.monospaced)
-                                }
-
-                                HStack {
-                                    Text("Build")
-                                        .fontWeight(.medium)
-                                    Spacer()
-                                    Text("1.0.0 (1)")
-                                        .foregroundStyle(.secondary)
-                                        .fontDesign(.monospaced)
-                                }
-
-                                HStack {
-                                    Text("Platform")
-                                        .fontWeight(.medium)
-                                    Spacer()
-                                    #if os(macOS)
-                                        Text("macOS")
-                                            .foregroundStyle(.secondary)
-                                    #elseif os(iOS)
-                                        Text("iOS")
-                                            .foregroundStyle(.secondary)
-                                    #endif
-                                }
-                            }
-                        }
-                        .padding()
+                    VStack(spacing: 12) {
+                        SettingsInfoRow(label: "Version", value: "1.0.0")
+                        SettingsInfoRow(label: "Build", value: "1.0.0 (1)")
+                        SettingsInfoRow(label: "Platform", value: platformName)
                     }
                 }
                 .padding()
             }
         }
+    }
+
+    private var platformName: String {
+        #if os(macOS)
+            return "macOS"
+        #elseif os(iOS)
+            return "iOS"
+        #else
+            return "Unknown"
+        #endif
+    }
+}
+
+// MARK: - Reusable Components
+
+struct SettingsPageView<Content: View>: View {
+    let title: String
+    let subtitle: String
+    @ViewBuilder let content: Content
+
+    var body: some View {
+        Form {
+            Section {
+                VStack(alignment: .leading, spacing: 20) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text(title)
+                            .font(.title2)
+                            .fontWeight(.semibold)
+
+                        Text(subtitle)
+                            .foregroundStyle(.secondary)
+                    }
+
+                    content
+                }
+                .padding()
+            }
+        }
         .formStyle(.grouped)
-        .scrollContentBackground(.hidden)  // WWDC 2025: Let materials show through
+        .scrollContentBackground(.hidden)
+    }
+}
+
+struct SettingsGroup<Content: View>: View {
+    let title: String
+    @ViewBuilder let content: Content
+
+    var body: some View {
+        GroupBox(title) {
+            content
+        }
+    }
+}
+
+struct SettingsInfoRow: View {
+    let label: String
+    let value: String
+
+    var body: some View {
+        HStack {
+            Text(label)
+                .fontWeight(.medium)
+            Spacer()
+            Text(value)
+                .foregroundStyle(.secondary)
+                .fontDesign(.monospaced)
+        }
     }
 }
 
