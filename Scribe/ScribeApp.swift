@@ -11,6 +11,7 @@ struct SwiftTranscriptionSampleApp: App {
                 .environment(settings)
                 .preferredColorScheme(settings.colorScheme)
         }
+        .modelContainer(for: Memo.self)
 
         #if os(macOS)
             Settings {

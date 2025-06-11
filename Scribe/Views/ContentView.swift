@@ -3,27 +3,49 @@ import SwiftData
 import SwiftUI
 
 struct ContentView: View {
+    @Query(sort: \Memo.createdAt, order: .reverse) private var memos: [Memo]
     @State var selection: Memo?
     @State var currentMemo: Memo = Memo.blank()
     @State private var showingSettings = false
     @Environment(AppSettings.self) private var settings
+    @Environment(\.modelContext) private var modelContext
 
     var body: some View {
         NavigationSplitView {
             List(selection: $selection) {
-                ForEach(memos, id: \.id) { memo in
+                ForEach(memos) { memo in
                     NavigationLink(value: memo) {
-                        Text(memo.title)
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(memo.title)
+                                .font(.headline)
+                            Text(memo.createdAt.formatted(date: .abbreviated, time: .omitted))
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                            if !memo.text.characters.isEmpty {
+                                Text(
+                                    String(memo.text.characters.prefix(50))
+                                        + (memo.text.characters.count > 50 ? "..." : "")
+                                )
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                                .lineLimit(2)
+                            }
+                        }
                     }
                 }
+                .onDelete(perform: deleteMemos)
             }
             .navigationTitle("Memos")
             .toolbar {
                 #if os(iOS)
                     // Group primary actions together
                     ToolbarItemGroup(placement: .navigationBarTrailing) {
+                        if !memos.isEmpty {
+                            EditButton()
+                        }
+
                         Button {
-                            memos.append(Memo.blank())
+                            addMemo()
                         } label: {
                             Label("Add Item", systemImage: "plus")
                         }
@@ -36,9 +58,20 @@ struct ContentView: View {
                     }
                 #elseif os(macOS)
                     // On macOS, settings are in the app menu, so only show the Add button
-                    ToolbarItem(placement: .primaryAction) {
+                    ToolbarItemGroup(placement: .primaryAction) {
+                        if !memos.isEmpty && selection != nil {
+                            Button {
+                                if let selection = selection {
+                                    deleteMemo(selection)
+                                }
+                            } label: {
+                                Label("Delete Item", systemImage: "trash")
+                            }
+                            .foregroundColor(.red)
+                        }
+
                         Button {
-                            memos.append(Memo.blank())
+                            addMemo()
                         } label: {
                             Label("Add Item", systemImage: "plus")
                         }
@@ -65,5 +98,23 @@ struct ContentView: View {
         #endif
     }
 
-    @State var memos: [Memo] = []
+    private func addMemo() {
+        let newMemo = Memo.blank()
+        modelContext.insert(newMemo)
+        selection = newMemo
+        currentMemo = newMemo
+    }
+
+    private func deleteMemos(offsets: IndexSet) {
+        for index in offsets {
+            deleteMemo(memos[index])
+        }
+    }
+
+    private func deleteMemo(_ memo: Memo) {
+        if selection == memo {
+            selection = nil
+        }
+        modelContext.delete(memo)
+    }
 }

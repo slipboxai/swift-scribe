@@ -1,12 +1,12 @@
 import AVFoundation
 import Foundation
 import FoundationModels
+import SwiftData
 
-@Observable
-class Memo: Identifiable {
+@Model
+class Memo {
     typealias StartTime = CMTime
 
-    let id: UUID
     var title: String
     var text: AttributedString
     var url: URL?  // Audio file URL
@@ -24,7 +24,6 @@ class Memo: Identifiable {
         self.isDone = isDone
         self.duration = duration
         self.createdAt = Date()
-        self.id = UUID()
     }
 
     func suggestedTitle() async throws -> String? {

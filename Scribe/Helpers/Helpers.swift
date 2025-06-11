@@ -2,18 +2,6 @@ import AVFoundation
 import Foundation
 import SwiftUI
 
-extension Memo: Equatable {
-    static func == (lhs: Memo, rhs: Memo) -> Bool {
-        lhs.id == rhs.id
-    }
-}
-
-extension Memo: Hashable {
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
-    }
-}
-
 enum TranscriptionState {
     case transcribing
     case notTranscribing
