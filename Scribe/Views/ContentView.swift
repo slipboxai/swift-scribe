@@ -3,8 +3,8 @@ import SwiftData
 import SwiftUI
 
 struct ContentView: View {
-    @State var selection: Story?
-    @State var currentStory: Story = Story.blank()
+    @State var selection: Memo?
+    @State var currentMemo: Memo = Memo.blank()
     @State private var showingSettings = false
     @Environment(AppSettings.self) private var settings
 
@@ -42,7 +42,7 @@ struct ContentView: View {
                     // On macOS, settings are in the app menu, so only show the Add button
                     ToolbarItem(placement: .primaryAction) {
                         Button {
-                            stories.append(Story.blank())
+                            stories.append(Memo.blank())
                         } label: {
                             Label("Add Item", systemImage: "plus")
                         }
@@ -52,14 +52,14 @@ struct ContentView: View {
             .toolbarBackground(.hidden)
         } detail: {
             if selection != nil {
-                TranscriptView(story: $currentStory)
+                TranscriptView(memo: $currentMemo)
             } else {
                 Text("Select an item")
             }
         }
         .onChange(of: selection) {
             if let selection {
-                currentStory = selection
+                currentMemo = selection
             }
         }
         #if os(iOS)
@@ -70,7 +70,7 @@ struct ContentView: View {
         #endif
     }
 
-    @State var stories: [Story] = []
+    @State var stories: [Memo] = []
     #if os(iOS)
         @Namespace private var settingsNamespace
     #endif

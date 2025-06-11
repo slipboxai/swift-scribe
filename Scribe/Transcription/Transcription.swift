@@ -18,7 +18,7 @@ final class SpokenWordTranscriber: Sendable {
     var converter = BufferConverter()
     var downloadProgress: Progress?
 
-    var story: Binding<Story>
+    var memo: Binding<Memo>
 
     var volatileTranscript: AttributedString = ""
     var finalizedTranscript: AttributedString = ""
@@ -26,8 +26,8 @@ final class SpokenWordTranscriber: Sendable {
     static let locale = Locale(
         components: .init(languageCode: .english, script: nil, languageRegion: .unitedStates))
 
-    init(story: Binding<Story>) {
-        self.story = story
+    init(memo: Binding<Memo>) {
+        self.memo = memo
     }
 
     func setUpTranscriber() async throws {
@@ -79,7 +79,7 @@ final class SpokenWordTranscriber: Sendable {
     }
 
     func updateStoryWithNewText(withFinal str: AttributedString) {
-        story.text.wrappedValue.append(str)
+        memo.text.wrappedValue.append(str)
     }
 
     func streamAudioToTranscriber(_ buffer: AVAudioPCMBuffer) async throws {

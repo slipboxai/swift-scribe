@@ -3,20 +3,27 @@ import Foundation
 import FoundationModels
 
 @Observable
-class Story: Identifiable {
+class Memo: Identifiable {
     typealias StartTime = CMTime
 
     let id: UUID
     var title: String
     var text: AttributedString
-    var url: URL?
+    var url: URL?  // Audio file URL
     var isDone: Bool
+    var createdAt: Date
+    var duration: TimeInterval?
 
-    init(title: String, text: AttributedString, url: URL? = nil, isDone: Bool = false) {
+    init(
+        title: String, text: AttributedString, url: URL? = nil, isDone: Bool = false,
+        duration: TimeInterval? = nil
+    ) {
         self.title = title
         self.text = text
         self.url = url
         self.isDone = isDone
+        self.duration = duration
+        self.createdAt = Date()
         self.id = UUID()
     }
 
@@ -25,18 +32,28 @@ class Story: Identifiable {
         let session = LanguageModelSession(model: SystemLanguageModel.default)
         let answer = try await session.respond(
             to:
-                "Here is a children's story. Can you please return your very best suggested title for it, with no other text? The title should be descriptive of the story and include the main character's name. Story: \(text.characters)"
+                "Here is a transcribed voice memo. Can you please return your very best suggested title for it, with no other text? The title should be descriptive and concise. Transcription: \(text.characters)"
         )
         return answer.content.trimmingCharacters(in: .punctuationCharacters)
     }
+
+    func summarize(using template: String) async throws -> String? {
+        guard SystemLanguageModel.default.isAvailable else { return nil }
+        let session = LanguageModelSession(model: SystemLanguageModel.default)
+        let answer = try await session.respond(
+            to:
+                "Please summarize the following transcribed voice memo using this format/template: \(template)\n\nTranscription: \(text.characters)"
+        )
+        return answer.content
+    }
 }
 
-extension Story {
-    static func blank() -> Story {
-        return .init(title: "New Story", text: AttributedString(""))
+extension Memo {
+    static func blank() -> Memo {
+        return .init(title: "New Memo", text: AttributedString(""))
     }
 
-    func storyBrokenUpByLines() -> AttributedString {
+    func textBrokenUpByParagraphs() -> AttributedString {
         print(String(text.characters))
         if url == nil {
             print("url was nil")

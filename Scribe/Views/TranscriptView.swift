@@ -4,7 +4,7 @@ import Speech
 import SwiftUI
 
 struct TranscriptView: View {
-    @Binding var story: Story
+    @Binding var memo: Memo
     @State var isRecording = false
     @State var isPlaying = false
 
@@ -17,17 +17,17 @@ struct TranscriptView: View {
 
     @State var timer: Timer?
 
-    init(story: Binding<Story>) {
-        self._story = story
-        let transcriber = SpokenWordTranscriber(story: story)
-        recorder = Recorder(transcriber: transcriber, story: story)
+    init(memo: Binding<Memo>) {
+        self._memo = memo
+        let transcriber = SpokenWordTranscriber(memo: memo)
+        recorder = Recorder(transcriber: transcriber, memo: memo)
         speechTranscriber = transcriber
     }
 
     var body: some View {
         VStack(alignment: .leading) {
             Group {
-                if !story.isDone {
+                if !memo.isDone {
                     liveRecordingView
                 } else {
                     playbackView
@@ -36,7 +36,7 @@ struct TranscriptView: View {
             Spacer()
         }
         .padding(20)
-        .navigationTitle(story.title)
+        .navigationTitle(memo.title)
         .toolbarBackground(.hidden)
         .toolbar {
             ToolbarItem {
@@ -49,7 +49,7 @@ struct TranscriptView: View {
                         Label("Record", systemImage: "record.circle").tint(.red)
                     }
                 }
-                .disabled(story.isDone)
+                .disabled(memo.isDone)
             }
 
             ToolbarItem {
@@ -60,7 +60,7 @@ struct TranscriptView: View {
                         .blue
                     ).font(.title)
                 }
-                .disabled(!story.isDone)
+                .disabled(!memo.isDone)
             }
 
             ToolbarItem {
@@ -98,7 +98,8 @@ struct TranscriptView: View {
 
     @ViewBuilder
     var playbackView: some View {
-        textScrollView(attributedString: story.storyBrokenUpByLines())
+        textScrollView(attributedString: memo.textBrokenUpByParagraphs())
             .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
+

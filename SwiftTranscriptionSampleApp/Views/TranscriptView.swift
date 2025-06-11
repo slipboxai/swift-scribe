@@ -11,7 +11,7 @@ import Speech
 import SwiftUI
 
 struct TranscriptView: View {
-    @Binding var story: Story
+    @Binding var memo: Story
     @State var isRecording = false
     @State var isPlaying = false
 
@@ -24,10 +24,10 @@ struct TranscriptView: View {
 
     @State var timer: Timer?
 
-    init(story: Binding<Story>) {
+    init(memo: Binding<Story>) {
         self._story = story
-        let transcriber = SpokenWordTranscriber(story: story)
-        recorder = Recorder(transcriber: transcriber, story: story)
+        let transcriber = SpokenWordTranscriber(memo: story)
+        recorder = Recorder(transcriber: transcriber, memo: story)
         speechTranscriber = transcriber
     }
 

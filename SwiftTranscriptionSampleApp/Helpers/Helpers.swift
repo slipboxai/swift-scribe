@@ -2,13 +2,13 @@ import AVFoundation
 import Foundation
 import SwiftUI
 
-extension Memo: Equatable {
-    static func == (lhs: Memo, rhs: Memo) -> Bool {
+extension memo: Equatable {
+    static func == (lhs: Story, rhs: Story) -> Bool {
         lhs.id == rhs.id
     }
 }
 
-extension Memo: Hashable {
+extension memo: Hashable {
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
     }
@@ -95,7 +95,7 @@ extension AVAudioPlayerNode {
 extension TranscriptView {
 
     func handlePlayback() {
-        guard memo.url != nil else {
+        guard story.url != nil else {
             return
         }
 
