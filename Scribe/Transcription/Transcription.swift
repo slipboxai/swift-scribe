@@ -96,6 +96,13 @@ final class SpokenWordTranscriber: Sendable {
         recognizerTask?.cancel()
         recognizerTask = nil
     }
+
+    /// Reset the transcriber for a new recording session
+    /// This clears existing transcripts when restarting recording
+    public func reset() {
+        volatileTranscript = ""
+        finalizedTranscript = ""
+    }
 }
 
 extension SpokenWordTranscriber {

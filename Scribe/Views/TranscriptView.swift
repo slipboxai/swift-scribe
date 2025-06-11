@@ -5,7 +5,7 @@ import SwiftUI
 
 struct TranscriptView: View {
     @Binding var memo: Memo
-    @State var isRecording = false
+    @Binding var isRecording: Bool
     @State var isPlaying = false
     @State var isGenerating = false
 
@@ -22,8 +22,9 @@ struct TranscriptView: View {
     @State var showingSummary = false
     @State var generatedSummary = ""
 
-    init(memo: Binding<Memo>) {
+    init(memo: Binding<Memo>, isRecording: Binding<Bool>) {
         self._memo = memo
+        self._isRecording = isRecording
         let transcriber = SpokenWordTranscriber(memo: memo)
         recorder = Recorder(transcriber: transcriber, memo: memo)
         speechTranscriber = transcriber
@@ -79,6 +80,11 @@ struct TranscriptView: View {
         .onChange(of: isRecording) { oldValue, newValue in
             guard newValue != oldValue else { return }
             if newValue == true {
+                // If restarting recording on an existing memo, reset the transcriber
+                if memo.isDone {
+                    memo.isDone = false
+                    speechTranscriber.reset()
+                }
                 Task {
                     do {
                         try await recorder.record()
@@ -109,10 +115,13 @@ struct TranscriptView: View {
             }
 
             // Auto-start recording if there's no existing transcript
-            if !memo.isDone && speechTranscriber.finalizedTranscript.utf8.isEmpty
-                && speechTranscriber.volatileTranscript.utf8.isEmpty
-            {
-                isRecording = true
+            if !memo.isDone && memo.text.characters.isEmpty {
+                // Reset transcriber to ensure clean state
+                speechTranscriber.reset()
+                // Use a small delay to ensure the view is fully loaded
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                    isRecording = true
+                }
             }
         }
         #if os(iOS)
@@ -175,22 +184,23 @@ struct TranscriptView: View {
 
     @ViewBuilder
     private var recordingControlsGroup: some View {
-        Button {
-            handleRecordingButtonTap()
-        } label: {
-            HStack(spacing: 8) {
-                Image(systemName: isRecording ? "stop.fill" : "record.circle")
-                    .font(.headline)
-                    .symbolRenderingMode(.monochrome)
-                    .foregroundStyle(isRecording ? .red : .primary)
+        if !memo.isDone {
+            Button {
+                handleRecordingButtonTap()
+            } label: {
+                HStack(spacing: 8) {
+                    Image(systemName: isRecording ? "stop.fill" : "record.circle")
+                        .font(.headline)
+                        .symbolRenderingMode(.monochrome)
+                        .foregroundStyle(isRecording ? .red : .primary)
 
-                Text(isRecording ? "Stop" : "Record")
-                    .font(.headline)
-                    .fontWeight(.medium)
-                    .foregroundStyle(isRecording ? .red : .primary)
+                    Text(isRecording ? "Stop" : "Record")
+                        .font(.headline)
+                        .fontWeight(.medium)
+                        .foregroundStyle(isRecording ? .red : .primary)
+                }
             }
         }
-        .disabled(memo.isDone)
     }
 
     @ViewBuilder

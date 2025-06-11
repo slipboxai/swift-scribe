@@ -7,6 +7,7 @@ struct ContentView: View {
     @State var selection: Memo?
     @State var currentMemo: Memo = Memo.blank()
     @State private var showingSettings = false
+    @State private var isRecording = false  // Track recording state globally
     @Environment(AppSettings.self) private var settings
     @Environment(\.modelContext) private var modelContext
 
@@ -36,6 +37,10 @@ struct ContentView: View {
                 .onDelete(perform: deleteMemos)
             }
             .navigationTitle("Memos")
+            .navigationSplitViewColumnWidth(min: 250, ideal: 250, max: 400)
+            #if os(iOS)
+                .toolbar(columnVisibility == .all ? .visible : .hidden, for: .navigationBar)
+            #endif
             .toolbar {
                 #if os(iOS)
                     // Group primary actions together
@@ -44,10 +49,12 @@ struct ContentView: View {
                             EditButton()
                         }
 
-                        Button {
-                            addMemo()
-                        } label: {
-                            Label("Add Item", systemImage: "plus")
+                        if !isRecording {
+                            Button {
+                                addMemo()
+                            } label: {
+                                Label("New Memo", systemImage: "plus")
+                            }
                         }
 
                         Button {
@@ -65,15 +72,17 @@ struct ContentView: View {
                                     deleteMemo(selection)
                                 }
                             } label: {
-                                Label("Delete Item", systemImage: "trash")
+                                Label("Delete Memo", systemImage: "trash")
                             }
                             .foregroundColor(.red)
                         }
 
-                        Button {
-                            addMemo()
-                        } label: {
-                            Label("Add Item", systemImage: "plus")
+                        if !isRecording {
+                            Button {
+                                addMemo()
+                            } label: {
+                                Label("New Memo", systemImage: "plus")
+                            }
                         }
                     }
                 #endif
@@ -81,7 +90,7 @@ struct ContentView: View {
             .toolbarBackground(.hidden)
         } detail: {
             if selection != nil {
-                TranscriptView(memo: $currentMemo)
+                TranscriptView(memo: $currentMemo, isRecording: $isRecording)
             } else {
                 Text("Select an item")
             }
