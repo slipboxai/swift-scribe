@@ -154,23 +154,23 @@ struct TranscriptView: View {
 
     @ViewBuilder
     private var playbackControlsGroup: some View {
-        Button {
-            handlePlayButtonTap()
-        } label: {
-            HStack(spacing: 8) {
-                Image(systemName: isPlaying ? "pause.fill" : "play.fill")
-                    .font(.title3)
-                    .symbolRenderingMode(.monochrome)
-                    .foregroundStyle(.blue)
+        if memo.isDone {
+            Button {
+                handlePlayButtonTap()
+            } label: {
+                HStack(spacing: 8) {
+                    Image(systemName: isPlaying ? "pause.fill" : "play.fill")
+                        .font(.headline)
+                        .symbolRenderingMode(.monochrome)
+                        .foregroundStyle(.blue)
 
-                Text(isPlaying ? "Pause" : "Play")
-                    .font(.headline)
-                    .fontWeight(.medium)
-                    .foregroundStyle(.primary)
+                    Text(isPlaying ? "Pause" : "Play")
+                        .font(.headline)
+                        .fontWeight(.medium)
+                        .foregroundStyle(.primary)
+                }
             }
         }
-        .glassEffect()
-        .disabled(!memo.isDone)
     }
 
     @ViewBuilder
@@ -180,7 +180,7 @@ struct TranscriptView: View {
         } label: {
             HStack(spacing: 8) {
                 Image(systemName: isRecording ? "stop.fill" : "record.circle")
-                    .font(.title2)
+                    .font(.headline)
                     .symbolRenderingMode(.monochrome)
                     .foregroundStyle(isRecording ? .red : .primary)
 
@@ -190,33 +190,33 @@ struct TranscriptView: View {
                     .foregroundStyle(isRecording ? .red : .primary)
             }
         }
-        .glassEffect()
         .disabled(memo.isDone)
     }
 
     @ViewBuilder
     private var aiControlsGroup: some View {
-        Button {
-            handleAIEnhanceButtonTap()
-        } label: {
-            HStack(spacing: 8) {
-                if isGenerating {
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle())
-                        .scaleEffect(0.8)
-                } else {
-                    Image(systemName: "sparkles")
-                        .font(.title3)
-                        .symbolRenderingMode(.monochrome)
-                        .foregroundStyle(.purple)
+        if memo.isDone {
+            Button {
+                handleAIEnhanceButtonTap()
+            } label: {
+                HStack(spacing: 8) {
+                    if isGenerating {
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle())
+                            .scaleEffect(0.8)
+                    } else {
+                        Image(systemName: "sparkles")
+                            .font(.headline)
+                            .symbolRenderingMode(.monochrome)
+                            .foregroundStyle(.purple)
+                    }
+                    Text("Enhance")
+                        .font(.headline)
+                        .fontWeight(.medium)
                 }
-                Text("Enhance")
-                    .font(.headline)
-                    .fontWeight(.medium)
             }
+            .disabled(memo.text.characters.isEmpty || isGenerating)
         }
-        .glassEffect()
-        .disabled(!memo.isDone || memo.text.characters.isEmpty || isGenerating)
     }
 
     @ViewBuilder
@@ -273,7 +273,7 @@ struct TranscriptView: View {
     @ViewBuilder
     var playbackView: some View {
         textScrollView(attributedString: memo.textBrokenUpByParagraphs())
-            .frame(maxWidth: .infinity, alignment: .leading)
+            .frame(maxWidth: .infinity, alignment: .center)
             .scrollEdgeEffectStyle(.soft, for: .all)
     }
 
