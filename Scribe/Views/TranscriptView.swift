@@ -1,10 +1,3 @@
-/*
-See the LICENSE.txt file for this sample’s licensing information.
-
-Abstract:
-The transcript view.
-*/
-
 import AVFoundation
 import Foundation
 import Speech
