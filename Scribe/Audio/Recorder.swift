@@ -2,6 +2,7 @@ import AVFoundation
 import Foundation
 import SwiftUI
 
+@MainActor
 class Recorder {
     private var outputContinuation: AsyncStream<AVAudioPCMBuffer>.Continuation? = nil
     private let audioEngine: AVAudioEngine

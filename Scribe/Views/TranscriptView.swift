@@ -29,7 +29,7 @@ struct TranscriptView: View {
         let transcriber = SpokenWordTranscriber(memo: memo)
         recorder = Recorder(transcriber: transcriber, memo: memo)
         speechTranscriber = transcriber
-        showingEnhancedView = memo.summary != nil
+        showingEnhancedView = memo.summary.wrappedValue != nil
     }
 
     var body: some View {
@@ -207,7 +207,7 @@ struct TranscriptView: View {
             .padding(.bottom, 16)
 
             // Enhanced content area with better formatting
-            if let summary = memo.summary {
+            if memo.summary != nil {
                 ScrollView {
                     TextEditor(
                         text: Binding(

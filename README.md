@@ -1,6 +1,6 @@
 # Slipbox Scribe
 
-An iOS/macOS application that combines Apple's SpeechAnalyzer framework with Foundation Models and Rich Text Editor capabilities for intelligent note-taking and knowledge management using Zettelkasten principles.
+An iOS/macOS application that combines Apple's SpeechAnalyzer framework with Foundation Models and Rich Text Editor capabilities for intelligent note-taking.
 
 ## Overview
 
