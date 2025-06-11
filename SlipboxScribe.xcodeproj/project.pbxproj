@@ -13,9 +13,9 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		56177C7E2DA2E84500A2A2BB /* SwiftTranscriptionSampleApp */ = {
+		56177C7E2DA2E84500A2A2BB /* Scribe */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = SwiftTranscriptionSampleApp;
+			path = Scribe;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -35,7 +35,7 @@
 			isa = PBXGroup;
 			children = (
 				785079145B6CEF6E2D011C0E /* README.md */,
-				56177C7E2DA2E84500A2A2BB /* SwiftTranscriptionSampleApp */,
+				56177C7E2DA2E84500A2A2BB /* Scribe */,
 				56177C7D2DA2E84500A2A2BB /* Products */,
 				DAAE7046DB7565BCE8FFD913 /* Configuration */,
 			);
@@ -73,7 +73,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				56177C7E2DA2E84500A2A2BB /* SwiftTranscriptionSampleApp */,
+				56177C7E2DA2E84500A2A2BB /* Scribe */,
 			);
 			name = SlipboxScribe;
 			productName = SwiftTranscriptionSampleApp;
