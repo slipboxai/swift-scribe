@@ -1,9 +1,3 @@
-//
-// See the LICENSE.txt file for this sample’s licensing information.
-//
-// SampleCode.xcconfig
-//
-
 // The `SAMPLE_CODE_DISAMBIGUATOR` configuration is to make it easier to build
 // and run a sample code project. Once you set your project's development team,
 // you'll have a unique bundle identifier. This is because the bundle identifier

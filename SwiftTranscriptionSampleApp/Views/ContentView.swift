@@ -5,14 +5,14 @@ Abstract:
 The app's main view.
 */
 
-import SwiftUI
-import SwiftData
 import Speech
+import SwiftData
+import SwiftUI
 
 struct ContentView: View {
     @State var selection: Story?
     @State var currentStory: Story = Story.blank()
-    
+
     var body: some View {
         NavigationSplitView {
             List(stories, selection: $selection) { story in
@@ -20,9 +20,8 @@ struct ContentView: View {
                     Text(story.title)
                 }
             }
-            
             .navigationTitle("Stories")
-            
+
             .toolbar {
                 ToolbarItem {
                     Button {
@@ -32,6 +31,8 @@ struct ContentView: View {
                     }
                 }
             }
+            .toolbarBackground(.hidden)
+
         } detail: {
             if selection != nil {
                 TranscriptView(story: $currentStory)
@@ -45,6 +46,6 @@ struct ContentView: View {
             }
         }
     }
-    
+
     @State var stories: [Story] = []
 }
