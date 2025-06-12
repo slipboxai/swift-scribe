@@ -43,7 +43,7 @@ All processing happens entirely on-device with no data leaving your device.
 
    ```bash
    git clone https://github.com/slipboxai/swift-scribe
-   cd slipbox-scribe
+   cd swift-scribe
    ```
 
 2. Open the project in Xcode:
