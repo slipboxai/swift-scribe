@@ -2,9 +2,7 @@
 
 > **Real-time voice transcription, on-device AI processing, and intelligent note-taking exclusively for iOS 26 & macOS 26 and above**
 
-⚠️ **COMPATIBILITY NOTICE**: This application requires iOS 26 Beta/macOS 26 Beta or newer versions. It will NOT work on earlier iOS/macOS versions due to SpeechAnalyzer framework dependencies.
-
-An advanced iOS/macOS speech-to-text application that leverages Apple's cutting-edge SpeechAnalyzer framework, Foundation Models AI, and Rich Text Editor for intelligent voice note-taking, meeting transcription, and knowledge management.
+Uses Apple's new Foundation Model Framework and Advanced Speech Transcriber. Requires macOS 26 to run and compile the project. The goal is to demonstrate how easy it is now to build local, AI-first apps.
 
 ## 🎯 Overview
 
@@ -13,10 +11,10 @@ An advanced iOS/macOS speech-to-text application that leverages Apple's cutting-
 **Key Technologies:** SpeechAnalyzer • Foundation Models • Rich Text Editor • SwiftUI • Swift 6.2+ • On-Device AI
 
 ✅ **100% On-Device Processing** - No cloud dependencies, complete privacy  
-✅ **Real-Time Transcription** - Live speech-to-text with volatile and finalized results  
-✅ **AI-Powered Analysis** - Intelligent content organization and insights  
-✅ **Multi-Language Support** - International speech recognition capabilities  
-✅ **Rich Text Editing** - Advanced formatting with AttributedString  
+✅ **Real-Time Transcription** - Live speech-to-text with realtime and finalized results  
+✅ **AI Summary** - Summarizes transcribed text using on device model
+✅ **Multi-Language Support** - Multiple language ASR
+✅ **Rich Text Editing** - Advanced formatting with AttributedString 
 
 ![Slipbox Scribe Demo - AI Speech-to-Text Transcription](Docs/slipbox-scribe.gif)
 
@@ -29,34 +27,6 @@ An advanced iOS/macOS speech-to-text application that leverages Apple's cutting-
   </tr>
 </table>
 
-## ⚡ Core Features & Capabilities
-
-### 🎤 **Advanced Speech Recognition**
-- **Real-time transcription** using Apple's SpeechAnalyzer framework
-- **Long-form audio support** for extended recordings
-- **Multi-language speech recognition** with automatic language detection
-- **Volatile and finalized results** for immediate feedback
-- **High accuracy transcription** optimized for various audio conditions
-
-### 🤖 **On-Device AI Processing**
-- **Foundation Models integration** for intelligent content analysis
-- **Automatic content organization** and categorization
-- **Knowledge graph generation** from transcribed content
-- **Smart linking** between related ideas and concepts
-- **AI-powered insights** and content suggestions
-
-### ✏️ **Rich Text Editing & Formatting**
-- **AttributedString support** for advanced text formatting
-- **Custom formatting definitions** and dynamic attributes
-- **Rich text editor** with real-time styling
-- **Export capabilities** in multiple formats
-- **Advanced search** and navigation features
-
-### 🔒 **Privacy & Security**
-- **100% on-device processing** - no data transmission
-- **Local model storage** and management
-- **Privacy-first architecture** with no cloud dependencies
-- **Secure data handling** following Apple's best practices
 
 ## 🛠 Technical Requirements & Specifications
 
@@ -68,15 +38,6 @@ An advanced iOS/macOS speech-to-text application that leverages Apple's cutting-
 - **Apple Developer Account** with beta access to iOS 26/macOS 26
 - **Microphone permissions** for speech input
 
-⚠️ **CRITICAL**: SpeechAnalyzer framework is only available in iOS 26/macOS 26+. This app cannot be backported to earlier versions.
-
-### **Framework Dependencies**
-- **SpeechAnalyzer & SpeechTranscriber** - Core speech recognition
-- **Foundation Models** - On-device AI and ML processing
-- **AssetInventory** - Model downloading and management
-- **AttributedString** - Rich text handling and formatting
-- **AVFoundation** - Audio capture and processing
-- **SwiftUI** - Modern declarative user interface
 
 ## 🚀 Installation & Setup Guide
 
@@ -197,7 +158,6 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 - **Apple WWDC 2025** sessions on SpeechAnalyzer, Foundation Models, and Rich Text editing
 - **Apple Developer Frameworks** - SpeechAnalyzer, Foundation Models, Rich Text Editor
-- **Open Source Community** contributions and feedback
 
 ## 🚀 Getting Started with AI Development Tools
 
@@ -207,15 +167,6 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 - 🤖 **Foundation Models** framework integration
 - ✏️ **Rich Text Editor** advanced capabilities  
 - 🔊 **Audio processing** improvements and optimizations
-
-## 💬 Support & Community
-
-**Get help and contribute:**
-
-- 🐛 **Report issues** on GitHub Issues
-- 📖 **Read documentation** in the `Docs/` directory
-- 💡 **Feature requests** and enhancement suggestions
-- 🤝 **Community contributions** welcome
 
 ---
 
