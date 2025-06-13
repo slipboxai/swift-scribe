@@ -1,12 +1,14 @@
-# Slipbox Scribe - AI-Powered Speech-to-Text Private Transcription App for iOS & macOS
+# Slipbox Scribe - AI-Powered Speech-to-Text Private Transcription App for iOS 26 & macOS 26+
 
-> **Real-time voice transcription, on-device AI processing, and intelligent note-taking for iOS 26 & macOS 26**
+> **Real-time voice transcription, on-device AI processing, and intelligent note-taking exclusively for iOS 26 & macOS 26 and above**
+
+⚠️ **COMPATIBILITY NOTICE**: This application requires iOS 26 Beta/macOS 26 Beta or newer versions. It will NOT work on earlier iOS/macOS versions due to SpeechAnalyzer framework dependencies.
 
 An advanced iOS/macOS speech-to-text application that leverages Apple's cutting-edge SpeechAnalyzer framework, Foundation Models AI, and Rich Text Editor for intelligent voice note-taking, meeting transcription, and knowledge management.
 
 ## 🎯 Overview
 
-**Slipbox Scribe** is a privacy-first, AI-enhanced transcription application built for iOS 26/macOS 26 that transforms spoken words into organized, searchable notes. Using Apple's latest SpeechAnalyzer and SpeechTranscriber frameworks combined with on-device Foundation Models, it delivers real-time speech recognition, intelligent content analysis, and advanced text editing capabilities.
+**Slipbox Scribe** is a privacy-first, AI-enhanced transcription application built exclusively for iOS 26/macOS 26+ that transforms spoken words into organized, searchable notes. Using Apple's latest SpeechAnalyzer and SpeechTranscriber frameworks (available only in iOS 26/macOS 26+) combined with on-device Foundation Models, it delivers real-time speech recognition, intelligent content analysis, and advanced text editing capabilities.
 
 **Key Technologies:** SpeechAnalyzer • Foundation Models • Rich Text Editor • SwiftUI • Swift 6.2+ • On-Device AI
 
@@ -59,11 +61,14 @@ An advanced iOS/macOS speech-to-text application that leverages Apple's cutting-
 ## 🛠 Technical Requirements & Specifications
 
 ### **System Requirements**
-- **iOS 26 Beta** or **macOS 26 Beta** (mandatory for SpeechAnalyzer)
-- **Xcode Beta** with latest Swift 6.0 toolchain
-- **Swift 6.0+** programming language
-- **Apple Developer Account** with beta access
+- **iOS 26 Beta or newer** (REQUIRED - will not work on iOS 25 or earlier)
+- **macOS 26 Beta or newer** (REQUIRED - will not work on macOS 25 or earlier)  
+- **Xcode Beta** with latest Swift 6.2+ toolchain
+- **Swift 6.2+** programming language
+- **Apple Developer Account** with beta access to iOS 26/macOS 26
 - **Microphone permissions** for speech input
+
+⚠️ **CRITICAL**: SpeechAnalyzer framework is only available in iOS 26/macOS 26+. This app cannot be backported to earlier versions.
 
 ### **Framework Dependencies**
 - **SpeechAnalyzer & SpeechTranscriber** - Core speech recognition
@@ -90,9 +95,11 @@ An advanced iOS/macOS speech-to-text application that leverages Apple's cutting-
    open SlipboxScribe.xcodeproj
    ```
 
-3. **Configure deployment targets** for iOS 26 Beta/macOS 26 Beta
+3. **Configure deployment targets** for iOS 26 Beta/macOS 26 Beta or newer
 
-4. **Build and run** using Xcode Beta with Swift 6.0 toolchain
+4. **Build and run** using Xcode Beta with Swift 6.2+ toolchain
+
+⚠️ **Note**: Ensure your device is running iOS 26+ or macOS 26+ before installation.
 
 ## 📋 Use Cases & Applications
 
@@ -176,11 +183,11 @@ Scribe/                     # Core application logic and modules
 
 ## 🏷 Keywords & Tags
 
-**Primary Keywords:** speech-to-text, voice transcription, iOS app, macOS app, AI transcription, on-device AI, SpeechAnalyzer, Foundation Models, Swift 6.0, real-time transcription
+**Primary Keywords:** speech-to-text, voice transcription, iOS 26 app, macOS 26 app, AI transcription, on-device AI, SpeechAnalyzer, Foundation Models, Swift 6.2, real-time transcription
 
-**Secondary Keywords:** voice notes, meeting transcription, speech recognition, AI note-taking, privacy-first transcription, Apple AI frameworks, iOS 26, macOS 26, SwiftUI app
+**Secondary Keywords:** voice notes, meeting transcription, speech recognition, AI note-taking, privacy-first transcription, Apple AI frameworks, iOS 26+, macOS 26+, SwiftUI app, beta iOS app
 
-**Technical Tags:** #SpeechAnalyzer #FoundationModels #Swift6 #iOS26 #macOS26 #OnDeviceAI #SpeechToText #VoiceTranscription #RichTextEditor #PrivacyFirst
+**Technical Tags:** #SpeechAnalyzer #FoundationModels #Swift62 #iOS26 #macOS26 #OnDeviceAI #SpeechToText #VoiceTranscription #RichTextEditor #PrivacyFirst #AppleBeta
 
 ## 📄 License & Legal
 
