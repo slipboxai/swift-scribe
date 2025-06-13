@@ -2,13 +2,11 @@
 
 > **Real-time voice transcription, on-device AI processing, and intelligent note-taking exclusively for iOS 26 & macOS 26 and above**
 
-Uses Apple's new Foundation Model Framework and Advanced Speech Transcriber. Requires macOS 26 to run and compile the project. The goal is to demonstrate how easy it is now to build local, AI-first apps.
+Uses Apple's new Foundation Model Framework and SpeechTranscriber. Requires macOS 26 to run and compile the project. The goal is to demonstrate how easy it is now to build local, AI-first apps.
 
 ## 🎯 Overview
 
 **Slipbox Scribe** is a privacy-first, AI-enhanced transcription application built exclusively for iOS 26/macOS 26+ that transforms spoken words into organized, searchable notes. Using Apple's latest SpeechAnalyzer and SpeechTranscriber frameworks (available only in iOS 26/macOS 26+) combined with on-device Foundation Models, it delivers real-time speech recognition, intelligent content analysis, and advanced text editing capabilities.
-
-**Key Technologies:** SpeechTranscriber • Foundation Models • Rich Text Editor • Swift 6.2+ 
 
 ![Slipbox Scribe Demo - AI Speech-to-Text Transcription](Docs/slipbox-scribe.gif)
 
