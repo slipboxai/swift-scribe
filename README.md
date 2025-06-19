@@ -108,6 +108,7 @@ Scribe/                     # Core application logic and modules
 ```
 
 **Key Components:**
+
 - **Audio Engine** - Real-time audio capture and preprocessing
 - **Speech Pipeline** - SpeechAnalyzer integration and transcription flow
 - **AI Processing** - Foundation Models for content analysis
@@ -117,22 +118,18 @@ Scribe/                     # Core application logic and modules
 ## 🗺 Development Roadmap & Future Features
 
 ### **Phase 1: Core Enhancement**
+
 - ✅ Real-time speech transcription
 - ✅ On-device AI processing
 - ✅ Rich text editing
 - 🔄 Enhanced accuracy improvements
 
 ### **Phase 2: Advanced Features** 
+
 - 🎯 **Speaker diarization** and voice identification
 - 🔊 **Output audio tap** for system audio capture
 - 🌐 **Enhanced multi-language** support
 - 📊 **Advanced analytics** and insights
-
-### **Phase 3: Platform Expansion**
-- 📱 **iOS Shortcuts** integration
-- ⌚ **Apple Watch** companion app
-- 💻 **macOS menu bar** quick access
-- 🔗 **API integration** capabilities
 
 ## 🏷 Keywords & Tags
 
