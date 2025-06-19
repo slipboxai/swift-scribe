@@ -131,14 +131,6 @@ Scribe/                     # Core application logic and modules
 - 🌐 **Enhanced multi-language** support
 - 📊 **Advanced analytics** and insights
 
-## 🏷 Keywords & Tags
-
-**Primary Keywords:** speech-to-text, voice transcription, iOS 26 app, macOS 26 app, AI transcription, on-device AI, SpeechAnalyzer, Foundation Models, Swift 6.2, real-time transcription
-
-**Secondary Keywords:** voice notes, meeting transcription, speech recognition, AI note-taking, privacy-first transcription, Apple AI frameworks, iOS 26+, macOS 26+, SwiftUI app, beta iOS app
-
-**Technical Tags:** #SpeechAnalyzer #FoundationModels #Swift62 #iOS26 #macOS26 #OnDeviceAI #SpeechToText #VoiceTranscription #RichTextEditor #PrivacyFirst #AppleBeta
-
 ## 📄 License & Legal
 
 This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for complete details.
