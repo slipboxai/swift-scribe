@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXFileReference section */
-		56177C7C2DA2E84500A2A2BB /* SlipboxScribe.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SlipboxScribe.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		56177C7C2DA2E84500A2A2BB /* SwiftScribe.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftScribe.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		785079145B6CEF6E2D011C0E /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		ECC876D74CE254E1D1BC74C5 /* SampleCode.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = SampleCode.xcconfig; path = Configuration/SampleCode.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -44,7 +44,7 @@
 		56177C7D2DA2E84500A2A2BB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				56177C7C2DA2E84500A2A2BB /* SlipboxScribe.app */,
+				56177C7C2DA2E84500A2A2BB /* SwiftScribe.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -60,9 +60,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		56177C7B2DA2E84500A2A2BB /* SlipboxScribe */ = {
+		56177C7B2DA2E84500A2A2BB /* SwiftScribe */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 56177C9F2DA2E84700A2A2BB /* Build configuration list for PBXNativeTarget "SlipboxScribe" */;
+			buildConfigurationList = 56177C9F2DA2E84700A2A2BB /* Build configuration list for PBXNativeTarget "SwiftScribe" */;
 			buildPhases = (
 				56177C782DA2E84500A2A2BB /* Sources */,
 				56177C792DA2E84500A2A2BB /* Frameworks */,
@@ -75,9 +75,9 @@
 			fileSystemSynchronizedGroups = (
 				56177C7E2DA2E84500A2A2BB /* Scribe */,
 			);
-			name = SlipboxScribe;
+			name = SwiftScribe;
 			productName = SwiftTranscriptionSampleApp;
-			productReference = 56177C7C2DA2E84500A2A2BB /* SlipboxScribe.app */;
+			productReference = 56177C7C2DA2E84500A2A2BB /* SwiftScribe.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -96,7 +96,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 56177C772DA2E84500A2A2BB /* Build configuration list for PBXProject "SlipboxScribe" */;
+			buildConfigurationList = 56177C772DA2E84500A2A2BB /* Build configuration list for PBXProject "SwiftScribe" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -109,7 +109,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				56177C7B2DA2E84500A2A2BB /* SlipboxScribe */,
+				56177C7B2DA2E84500A2A2BB /* SwiftScribe */,
 			);
 		};
 /* End PBXProject section */
@@ -310,7 +310,7 @@
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "Slipbox Scribe";
+				INFOPLIST_KEY_CFBundleDisplayName = "Swift Scribe";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Record audio ";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
@@ -328,9 +328,9 @@
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 26.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = ai.slipbox.scribe;
-				"PRODUCT_BUNDLE_IDENTIFIER[sdk=iphoneos*]" = ai.slipbox.scribe.ios;
-				"PRODUCT_BUNDLE_IDENTIFIER[sdk=macosx*]" = ai.slipbox.scribe.macos;
+				PRODUCT_BUNDLE_IDENTIFIER = ai.swift.scribe;
+				"PRODUCT_BUNDLE_IDENTIFIER[sdk=iphoneos*]" = ai.swift.scribe.ios;
+				"PRODUCT_BUNDLE_IDENTIFIER[sdk=macosx*]" = ai.swift.scribe.macos;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				REGISTER_APP_GROUPS = YES;
@@ -372,7 +372,7 @@
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "Slipbox Scribe";
+				INFOPLIST_KEY_CFBundleDisplayName = "Swift Scribe";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Record audio ";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
@@ -390,9 +390,9 @@
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 26.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = ai.slipbox.scribe;
-				"PRODUCT_BUNDLE_IDENTIFIER[sdk=iphoneos*]" = ai.slipbox.scribe.ios;
-				"PRODUCT_BUNDLE_IDENTIFIER[sdk=macosx*]" = ai.slipbox.scribe.macos;
+				PRODUCT_BUNDLE_IDENTIFIER = ai.swift.scribe;
+				"PRODUCT_BUNDLE_IDENTIFIER[sdk=iphoneos*]" = ai.swift.scribe.ios;
+				"PRODUCT_BUNDLE_IDENTIFIER[sdk=macosx*]" = ai.swift.scribe.macos;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				REGISTER_APP_GROUPS = YES;
@@ -409,7 +409,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		56177C772DA2E84500A2A2BB /* Build configuration list for PBXProject "SlipboxScribe" */ = {
+		56177C772DA2E84500A2A2BB /* Build configuration list for PBXProject "SwiftScribe" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				56177C9D2DA2E84700A2A2BB /* Debug */,
@@ -418,7 +418,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		56177C9F2DA2E84700A2A2BB /* Build configuration list for PBXNativeTarget "SlipboxScribe" */ = {
+		56177C9F2DA2E84700A2A2BB /* Build configuration list for PBXNativeTarget "SwiftScribe" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				56177CA02DA2E84700A2A2BB /* Debug */,

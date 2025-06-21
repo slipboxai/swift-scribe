@@ -252,7 +252,7 @@ struct AboutSettingsView: View {
     var body: some View {
         SettingsPageView(
             title: "About",
-            subtitle: "Information about Slipbox Scribe."
+            subtitle: "Information about Swift Scribe."
         ) {
             SettingsGroup(title: "App Information") {
                 VStack(spacing: 16) {
@@ -262,7 +262,7 @@ struct AboutSettingsView: View {
                             .foregroundStyle(.blue)
 
                         VStack(alignment: .leading, spacing: 4) {
-                            Text("Slipbox Scribe")
+                            Text("Swift Scribe")
                                 .font(.headline)
                                 .fontWeight(.semibold)
                             Text("AI-powered audio transcription and note-taking")

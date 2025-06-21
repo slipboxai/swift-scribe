@@ -8,7 +8,7 @@ Uses Apple's new Foundation Model Framework and SpeechTranscriber. Requires macO
 
 **Swift Scribe** is a privacy-first, AI-enhanced transcription application built exclusively for iOS 26/macOS 26+ that transforms spoken words into organized, searchable notes. Using Apple's latest SpeechAnalyzer and SpeechTranscriber frameworks (available only in iOS 26/macOS 26+) combined with on-device Foundation Models, it delivers real-time speech recognition, intelligent content analysis, and advanced text editing capabilities.
 
-![Swift Scribe Demo - AI Speech-to-Text Transcription](Docs/slipbox-scribe.gif)
+![Swift Scribe Demo - AI Speech-to-Text Transcription](Docs/swift-scribe.gif)
 
 ## 📱 Screenshots & Demo
 
@@ -38,14 +38,14 @@ Uses Apple's new Foundation Model Framework and SpeechTranscriber. Requires macO
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/slipboxai/swift-scribe
+   git clone https://github.com/seamlesscompute/swift-scribe
    cd swift-scribe
    ```
 
 2. **Open in Xcode Beta:**
 
    ```bash
-   open SlipboxScribe.xcodeproj
+   open SwiftScribe.xcodeproj
    ```
 
 3. **Configure deployment targets** for iOS 26 Beta/macOS 26 Beta or newer
