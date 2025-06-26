@@ -44,15 +44,14 @@ class Memo {
         }
 
         // Generate enhanced title and summary concurrently
-        async let titleResult = generateEnhancedTitle(from: transcriptText)
-        async let summaryResult = generateRichSummary(from: transcriptText)
-
-        let (newTitle, newSummary) = try await (titleResult, summaryResult)
+        let titleResult = try? await generateEnhancedTitle(from: transcriptText)
+        let summaryResult = try? await generateRichSummary(from: transcriptText)
 
         // Update the memo with generated content
-        self.title = newTitle
-        self.summary = newSummary
+        self.title = titleResult ?? "New Note"
+        self.summary = summaryResult ?? "Something went wrong generating a summary."
     }
+
     private func generateEnhancedTitle(from text: String) async throws -> String {
         let session = FoundationModelsHelper.createSession(
             instructions: """
@@ -88,12 +87,9 @@ class Memo {
 
                 Guidelines:
                 - Create 2-4 well-structured paragraphs
-                - Start with the main topic or purpose
                 - Include key points and important details
-                - Use clear, professional language
-                - Maintain the original tone and intent
-                - End with any conclusions or next steps mentioned
                 - Mark important concepts or key terms that should be highlighted
+                - Output in markdown format
                 """)
 
         let prompt = "Create a comprehensive summary of this voice memo transcript:\n\n\(text)"

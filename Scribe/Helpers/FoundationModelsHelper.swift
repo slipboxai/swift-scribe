@@ -175,7 +175,7 @@ class FoundationModelsHelper {
 enum FoundationModelsError: LocalizedError {
     case contextWindowExceeded
     case unsupportedLanguage
-    case generationFailed(Error)
+    case generationFailed(any Error)
 
     var errorDescription: String? {
         switch self {

@@ -1,5 +1,6 @@
-import AVFoundation
+@preconcurrency import AVFoundation
 import Foundation
+import os
 
 class BufferConverter {
     enum Error: Swift.Error {
@@ -37,13 +38,17 @@ class BufferConverter {
         }
 
         var nsError: NSError?
-        var bufferProcessed = false
+        let bufferProcessedLock = OSAllocatedUnfairLock(initialState: false)
 
         let status = converter.convert(to: conversionBuffer, error: &nsError) {
             packetCount, inputStatusPointer in
-            defer { bufferProcessed = true }  // This closure can be called multiple times, but it only offers a single buffer.
-            inputStatusPointer.pointee = bufferProcessed ? .noDataNow : .haveData
-            return bufferProcessed ? nil : buffer
+            let wasProcessed = bufferProcessedLock.withLock { bufferProcessed in
+                let wasProcessed = bufferProcessed
+                bufferProcessed = true
+                return wasProcessed
+            }
+            inputStatusPointer.pointee = wasProcessed ? .noDataNow : .haveData
+            return wasProcessed ? nil : buffer
         }
 
         guard status != .error else {
