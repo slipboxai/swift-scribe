@@ -96,7 +96,8 @@ class FoundationModelsHelper {
         from previousSession: LanguageModelSession,
         keepLastEntries: Int = 1
     ) -> LanguageModelSession {
-        let allEntries = previousSession.transcript.entries
+        let transcript = previousSession.transcript
+        let allEntries = Array(transcript) 
         var condensedEntries = [Transcript.Entry]()
 
         // Always keep the first entry (instructions)
