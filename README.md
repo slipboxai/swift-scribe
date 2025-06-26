@@ -8,17 +8,10 @@ Uses Apple's new Foundation Model Framework and SpeechTranscriber. Requires macO
 
 **Swift Scribe** is a privacy-first, AI-enhanced transcription application built exclusively for iOS 26/macOS 26+ that transforms spoken words into organized, searchable notes. Using Apple's latest SpeechAnalyzer and SpeechTranscriber frameworks (available only in iOS 26/macOS 26+) combined with on-device Foundation Models, it delivers real-time speech recognition, intelligent content analysis, and advanced text editing capabilities.
 
+
 ![Swift Scribe Demo - AI Speech-to-Text Transcription](Docs/swift-scribe.gif)
 
-## 📱 Screenshots & Demo
-
-<table>
-  <tr>
-    <td><img src="Docs/ios.png" alt="iOS Speech-to-Text App Interface - Real-time Transcription" width="300"/></td>
-    <td><img src="Docs/ios2.png" alt="iOS AI Note-Taking App - Rich Text Editor" width="300"/></td>
-  </tr>
-</table>
-
+![Swift Scribe Demo - AI Speech-to-Text Transcription iOS](Docs/phone-scribe.gif)
 
 ## 🛠 Technical Requirements & Specifications
 
